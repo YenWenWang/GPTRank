@@ -18,10 +18,10 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: GPTrank
+title: GPTRank
 description: >- # this means to ignore newlines until "baseurl:"
   Guess how chatGPT rank different things!
-url: "https://yenwenwang.github.io/GPTrank" # the base hostname & protocol for your site, e.g. 
+url: "https://yenwenwang.github.io/GPTRank" # the base hostname & protocol for your site, e.g. 
 
 # Build settings
 theme: minima
