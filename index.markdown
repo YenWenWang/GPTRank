@@ -399,7 +399,6 @@ layout: home
                     rect = this.getBoundingClientRect();
                     this.style.position = 'absolute';
                     this.style.zIndex = '1000';
-                    this.style.width = `${rect.width}px`;
 //
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
@@ -448,7 +447,6 @@ layout: home
 //
                     this.style.position = 'static';
                     this.style.zIndex = '0';
-                    this.style.width = `${rect.width}px`;
 //
                     if (this.overItem) {
                         this.overItem.style.border = "1px solid #000";
