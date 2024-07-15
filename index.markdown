@@ -64,13 +64,12 @@ layout: home
             list-style: none;
         }
         .sortable-item {
-    margin: 5px 0;
-    padding: 10px;
-    border: 1px solid #000;
-    background-color: #fff;
-    cursor: move;
-    position: relative; /* Add this */
-}
+            margin: 5px 0;
+            padding: 10px;
+            border: 1px solid #000;
+            background-color: #fff;
+            cursor: move;
+        }
         .question-block {
             border: 1px solid #ccc;
             padding: 10px;
@@ -340,14 +339,6 @@ layout: home
         function initializeDragAndDrop() {
     const sortableItems = document.querySelectorAll(".sortable-item");
     let draggedItem = null;
-    let startY, startX;
-
-    const getTouchCoords = (e) => {
-        return {
-            x: e.touches[0].clientX,
-            y: e.touches[0].clientY
-        };
-    };
 
     sortableItems.forEach(item => {
         item.addEventListener("dragstart", function() {
@@ -389,42 +380,55 @@ layout: home
             }
         });
 
-        // Touch events
+        // Touch events for smartphones
         item.addEventListener("touchstart", function(e) {
             draggedItem = this;
-            const coords = getTouchCoords(e);
-            startY = coords.y;
-            startX = coords.x;
-            this.style.display = 'none';
+            setTimeout(() => this.style.display = 'none', 0);
+            const touch = e.touches[0];
+            this.initialX = touch.clientX;
+            this.initialY = touch.clientY;
+        });
+
+        item.addEventListener("touchend", function() {
+            setTimeout(() => {
+                this.style.display = 'block';
+                draggedItem = null;
+            }, 0);
+            this.style.border = "1px solid #000";
         });
 
         item.addEventListener("touchmove", function(e) {
             e.preventDefault();
-            const coords = getTouchCoords(e);
-            const deltaY = coords.y - startY;
-            const deltaX = coords.x - startX;
-            if (Math.abs(deltaY) > 10 || Math.abs(deltaX) > 10) {
-                // Optional: add your own logic to handle the touch drag visuals here
-            }
+            const touch = e.touches[0];
+            const currentX = touch.clientX;
+            const currentY = touch.clientY;
+            this.style.position = 'absolute';
+            this.style.zIndex = '1000';
+            this.style.left = `${currentX - this.initialX}px`;
+            this.style.top = `${currentY - this.initialY}px`;
         });
 
-        item.addEventListener("touchend", function(e) {
+        item.addEventListener("touchcancel", function() {
+            this.style.border = "1px solid #000";
+            this.style.position = 'static';
+            this.style.zIndex = '0';
+        });
+
+        item.addEventListener("touchend", function() {
+            this.style.position = 'static';
+            this.style.zIndex = '0';
+            this.style.border = "1px solid #000";
+        });
+
+        item.addEventListener("touchenter", function(e) {
             e.preventDefault();
-            this.style.display = 'block';
-            if (draggedItem !== this) {
-                let allItems = [...document.querySelectorAll(".sortable-item")];
-                let draggedIndex = allItems.indexOf(draggedItem);
-                let targetIndex = allItems.indexOf(this);
-                if (draggedIndex < targetIndex) {
-                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
-                } else {
-                    this.parentNode.insertBefore(draggedItem, this);
-                }
-            }
-            draggedItem = null;
+            this.style.border = "2px dashed #000";
+        });
+
+        item.addEventListener("touchleave", function() {
+            this.style.border = "1px solid #000";
         });
     });
-}
 //
         async function submitRanks(questionKey) {
             const sortableList = document.getElementById("sortableList");
