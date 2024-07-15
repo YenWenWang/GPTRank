@@ -345,134 +345,140 @@ layout: home
         });
 //
         function initializeDragAndDrop() {
-    const sortableItems = document.querySelectorAll(".sortable-item");
-    let draggedItem = null;
-    let draggingClone = null;
-
-    sortableItems.forEach(item => {
-        item.addEventListener("dragstart", function(e) {
-            draggedItem = this;
-            setTimeout(() => this.style.display = 'none', 0);
-        });
-
-        item.addEventListener("dragend", function() {
-            this.style.display = 'block';
-                draggedItem = null;
-            setTimeout(() => {
-                this.style.display = 'block';
-            }, 0);
-            this.style.border = "1px solid #000";  // Reset border
-        });
-
-        item.addEventListener("dragover", function(e) {
-            e.preventDefault();
-        });
-
-        item.addEventListener("dragenter", function(e) {
-            e.preventDefault();
-            this.style.border = "2px dashed #000";
-        });
-
-        item.addEventListener("dragleave", function() {
-            this.style.border = "1px solid #000";
-        });
-
-        item.addEventListener("drop", function() {
-            this.style.border = "1px solid #000";
-            if (draggedItem !== this) {
-                let allItems = [...document.querySelectorAll(".sortable-item")];
-                let draggedIndex = allItems.indexOf(draggedItem);
-                let targetIndex = allItems.indexOf(this);
-                if (draggedIndex < targetIndex) {
-                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
-                } else {
-                    this.parentNode.insertBefore(draggedItem, this);
-                }
-            }
-        });
-
-        // Touch events for smartphones
-        item.addEventListener("touchstart", function(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            draggingClone = this.cloneNode(true);
-            draggingClone.classList.add('dragging');
-            draggingClone.style.left = `${touch.clientX}px`; // Set the initial position
-            draggingClone.style.top = `${touch.clientY}px`; // Set the initial position
-            document.body.appendChild(draggingClone);
-
-            this.initialX = touch.clientX;
-            this.initialY = touch.clientY;
-            this.startX = touch.clientX;
-            this.startY = touch.clientY;
-            this.style.position = 'absolute';
-            this.style.zIndex = '1000';
-            this.style.width = `${this.clientWidth}px`;
-
-            setTimeout(() => this.style.display = 'none', 0);
-        });
-
-
-        item.addEventListener("touchmove", function(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
-            const currentX = touch.clientX;
-            const currentY = touch.clientY;
-
-            if (draggingClone) {
-                draggingClone.style.left = `${currentX - this.clientWidth / 2}px`; // Adjust the position
-                draggingClone.style.top = `${currentY - this.clientHeight / 2}px`; // Adjust the position
-            }
-
-            const elements = document.elementsFromPoint(currentX, currentY);
-            const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
-
-            if (target) {
-                target.style.border = "2px dashed #000";
-                this.overItem = target;
-            }
-        });
-
-
-        item.addEventListener("touchend", function() {
-            setTimeout(() => {
-                this.style.display = 'block';
-                draggedItem = null;
-                if (draggingClone) {
-                    document.body.removeChild(draggingClone);
-                    draggingClone = null;
-                }
-            }, 0);
-
-            this.style.position = 'static';
-            this.style.zIndex = '0';
-
-            if (this.overItem) {
-                this.overItem.style.border = "1px solid #000";
-                if (draggedItem !== this.overItem) {
-                    let allItems = [...document.querySelectorAll(".sortable-item")];
-                    let draggedIndex = allItems.indexOf(draggedItem);
-                    let targetIndex = allItems.indexOf(this.overItem);
-                    if (draggedIndex < targetIndex) {
-                        this.overItem.parentNode.insertBefore(draggedItem, this.overItem.nextSibling);
-                    } else {
-                        this.overItem.parentNode.insertBefore(draggedItem, this.overItem);
+            const sortableItems = document.querySelectorAll(".sortable-item");
+            let draggedItem = null;
+            let draggingClone = null;
+//
+            sortableItems.forEach(item => {
+                item.addEventListener("dragstart", function(e) {
+                    draggedItem = this;
+                    setTimeout(() => this.style.display = 'none', 0);
+                });
+//
+                item.addEventListener("dragend", function() {
+                    this.style.display = 'block';
+                        draggedItem = null;
+                    setTimeout(() => {
+                        this.style.display = 'block';
+                    }, 0);
+                    this.style.border = "1px solid #000";  // Reset border
+                });
+//
+                item.addEventListener("dragover", function(e) {
+                    e.preventDefault();
+                });
+//
+                item.addEventListener("dragenter", function(e) {
+                    e.preventDefault();
+                    this.style.border = "2px dashed #000";
+                });
+//
+                item.addEventListener("dragleave", function() {
+                    this.style.border = "1px solid #000";
+                });
+//
+                item.addEventListener("drop", function() {
+                    this.style.border = "1px solid #000";
+                    if (draggedItem !== this) {
+                        let allItems = [...document.querySelectorAll(".sortable-item")];
+                        let draggedIndex = allItems.indexOf(draggedItem);
+                        let targetIndex = allItems.indexOf(this);
+                        if (draggedIndex < targetIndex) {
+                            this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                        } else {
+                            this.parentNode.insertBefore(draggedItem, this);
+                        }
                     }
-                }
-            }
-
-            this.overItem = null;
-        });
-
-
-        item.addEventListener("touchcancel", function() {
-            this.style.border = "1px solid #000";
-            this.style.position = 'static';
-            this.style.zIndex = '0';
-        });
-    });
-
-}
+                });
+//
+                // Touch events for smartphones
+                item.addEventListener("touchstart", function(e) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    draggingClone = this.cloneNode(true);
+                    draggingClone.classList.add('dragging');
+                    draggingClone.style.left = `${touch.clientX}px`; // Set the initial position
+                    draggingClone.style.top = `${touch.clientY}px`; // Set the initial position
+                    document.body.appendChild(draggingClone);
+//
+                    this.initialX = touch.clientX;
+                    this.initialY = touch.clientY;
+                    this.startX = touch.clientX;
+                    this.startY = touch.clientY;
+                    this.style.position = 'absolute';
+                    this.style.zIndex = '1000';
+                    this.style.width = `${this.clientWidth}px`;
+//
+                    setTimeout(() => this.style.display = 'none', 0);
+                });
+//
+                item.addEventListener("touchmove", function(e) {
+                    e.preventDefault();
+                    draggedItem = this;
+                    const touch = e.touches[0];
+                    const currentX = touch.clientX;
+                    const currentY = touch.clientY;
+//
+                    if (draggingClone) {
+                        draggingClone.style.left = `${currentX - this.clientWidth / 2}px`; // Adjust the position
+                        draggingClone.style.top = `${currentY - this.clientHeight / 2}px`; // Adjust the position
+                    }
+//
+                    const elements = document.elementsFromPoint(currentX, currentY);
+                    const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
+//
+                    if (target) {
+                        target.style.border = "2px dashed #000";
+                        this.overItem = target;
+                    }
+                });
+//
+                item.addEventListener("touchend", function() {
+                    setTimeout(() => {
+                        this.style.display = 'block';
+                        draggedItem = null;
+                        if (draggingClone) {
+                            document.body.removeChild(draggingClone);
+                            draggingClone = null;
+                        }
+                    }, 0);
+//
+                    this.style.position = 'static';
+                    this.style.zIndex = '0';
+//
+                    if (this.overItem) {
+                        this.overItem.style.border = "1px solid #000";
+                        if (draggedItem !== this.overItem) {
+                            let allItems = [...document.querySelectorAll(".sortable-item")];
+                            let draggedIndex = allItems.indexOf(draggedItem);
+                            let targetIndex = allItems.indexOf(this.overItem);
+                            if (draggedIndex < targetIndex) {
+                                this.overItem.parentNode.insertBefore(draggedItem, this.overItem.nextSibling);
+                            } else {
+                                this.overItem.parentNode.insertBefore(draggedItem, this.overItem);
+                            }
+                        }
+                    }
+//
+                    this.overItem = null;
+                });
+//
+                item.addEventListener("touchcancel", function() {
+                    this.style.border = "1px solid #000";
+                    if (draggedItem !== this) {
+                        let allItems = [...document.querySelectorAll(".sortable-item")];
+                        let draggedIndex = allItems.indexOf(draggedItem);
+                        let targetIndex = allItems.indexOf(this);
+                        if (draggedIndex < targetIndex) {
+                            this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                        } else {
+                            this.parentNode.insertBefore(draggedItem, this);
+                        }
+                    }
+                });
+            });
+//
+        }
 //
         async function submitRanks(questionKey) {
             const sortableList = document.getElementById("sortableList");
