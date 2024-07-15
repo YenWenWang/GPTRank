@@ -155,7 +155,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 10;
+        const questionsPerPage = 3;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
@@ -399,7 +399,7 @@ layout: home
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
                     draggingClone.style.left = `${touch.clientX} px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY}px`; // Set the initial position
+                    draggingClone.style.top = `${touch.clientY} px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
                     this.initialX = touch.clientX;
