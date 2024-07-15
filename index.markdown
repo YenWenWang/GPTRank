@@ -127,7 +127,6 @@ layout: home
                 <input id="searchInput" type="text" placeholder="Search...">
             </div>
             <div id="Sort">
-                <label for="sortStrategy">Sort by:</label>
                 <select id="sortStrategy">
                     <option value="titleAsc">Title (A-Z)</option>
                     <option value="titleDesc">Title (Z-A)</option>
