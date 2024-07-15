@@ -410,7 +410,6 @@ layout: home
 //
                 item.addEventListener("touchmove", function(e) {
                     e.preventDefault();
-                    draggedItem = this;
                     const rect = this.getBoundingClientRect();
                     const touch = e.touches[0];
                     const currentX = touch.clientX;
