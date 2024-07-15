@@ -683,7 +683,7 @@ layout: home
                     count += 0.5;
                     }
                 });
-                return 100 * count / arr.length;
+                return 100-(100 * count / arr.length);
             }
 //
             document.getElementById("submitRanks").style.display = 'none';
@@ -692,13 +692,13 @@ layout: home
             results.innerHTML = "";
             let resultMessage = "";
             if (score===100) {
-                resultMessage = '<h4>Insane! <br>Your score is: ' + Math.round(score) + '!<br>You are at top ' + Math.ceil(percentile(eachScores, score)) + '%';
+                resultMessage = '<h4>Insane! <br>Your score is: ' + Math.round(score) + '!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%<.strong></h4>';
             }else if (score>=80) {
-                resultMessage = '<h4>Congratulations! <br>Your score is: ' + Math.round(score) + '!<br>You are at top ' + Math.ceil(percentile(eachScores, score)) + '%</h4>';
+                resultMessage = '<h4>Congratulations! <br>Your score is <strong>' + Math.round(score) + '!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%<.strong></h4>';
             }else if (score>=60) {
-                resultMessage = '<h4>Not bad! <br>Your score is: ' + Math.round(score) + '!<br>You are at top ' + Math.ceil(percentile(eachScores, score)) + '%</h4>';
+                resultMessage = '<h4>Not bad! <br>Your score is: ' + Math.round(score) + '!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%<.strong></h4>';
             }else{
-                resultMessage = '<h4>Next time will be better! <br>Your score is: ' + Math.round(score) + '!<br>You are at top ' + Math.ceil(percentile(eachScores, score)) + '%</h4>';
+                resultMessage = '<h4>Next time will be better! <br>Your score is: ' + Math.round(score) + '!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%<.strong></h4>';
             }
             results.innerHTML = `<p>${resultMessage}</p>`
 //
