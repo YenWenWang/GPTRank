@@ -549,6 +549,7 @@ layout: home
 //
                 item.addEventListener("touchcancel", function() {
                     if (draggedItem !== this) {
+                        draggingClone = null;
                         let allItems = [...document.querySelectorAll(".sortable-item")];
                         let draggedIndex = allItems.indexOf(draggedItem);
                         let targetIndex = allItems.indexOf(this);
