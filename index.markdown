@@ -433,6 +433,11 @@ layout: home
                         target.style.border = "2px dashed #000";
                         this.overItem = target;
                     }
+                    sortableItems.forEach(sortableItem => {
+                        if (sortableItem !== this && sortableItem !== target) {
+                            sortableItem.style.border = "1px solid #000";
+                        }
+                    });
                 });
 //
                 item.addEventListener("touchend", function() {
