@@ -399,14 +399,16 @@ layout: home
                     const rect = this.getBoundingClientRect();
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
-                    draggingClone.style.left = `${touch.clientX - rect.width / 2} px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY - rect.height / 2}px`; // Set the initial position
+                    draggingClone.style.left = `${touch.clientX - rect.width} px`; // Set the initial position
+                    draggingClone.style.top = `${touch.clientY - rect.height}px`; // Set the initial position
+                    draggingClone.style.width = `${rect.width}px`;
+                    draggingClone.style.top = `${rect.height}px`;
                     document.body.appendChild(draggingClone);
 //
-                    this.initialX = touch.clientX - rect.width / 2;
-                    this.initialY = touch.clientY - rect.width / 2;
-                    this.startX = touch.clientX - rect.width / 2;
-                    this.startY = touch.clientY - rect.width / 2;
+                    this.initialX = touch.clientX;
+                    this.initialY = touch.clientY;
+                    this.startX = touch.clientX;
+                    this.startY = touch.clientY;
                     this.style.position = 'absolute';
                     this.style.zIndex = '1000';
                     this.style.width = `${rect.width}px`;
@@ -427,14 +429,6 @@ layout: home
                         draggingClone.style.top = `${currentY - rect.height / 2}px`; // Adjust the position
                     }
 //
-
-                    this.initialX = touch.clientX - rect.width / 2;
-                    this.initialY = touch.clientY - rect.width / 2;
-                    this.startX = touch.clientX - rect.width / 2;
-                    this.startY = touch.clientY - rect.width / 2;
-                    this.style.position = 'absolute';
-                    this.style.zIndex = '1000';
-                    this.style.width = `${rect.width}px`;
                     const elements = document.elementsFromPoint(currentX, currentY);
                     const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
 //
