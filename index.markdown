@@ -6,7 +6,6 @@ title: "GPTRank"
 layout: home
 ---
 
-
 <head>
     <title>GPTRank</title>
     <style>
@@ -81,6 +80,8 @@ layout: home
             margin-left: 10px;
         }
         .dragging {
+            width: 100%; /* Ensure the cloned item retains the same width */
+            height: auto; /* Ensure the cloned item retains the same height */
             opacity: 0.5;
             background-color: #f0f0f0;
             position: absolute;
@@ -396,6 +397,8 @@ layout: home
             const touch = e.touches[0];
             draggingClone = this.cloneNode(true);
             draggingClone.classList.add('dragging');
+            draggingClone.style.left = `${touch.clientX}px`; // Set the initial position
+            draggingClone.style.top = `${touch.clientY}px`; // Set the initial position
             document.body.appendChild(draggingClone);
 
             this.initialX = touch.clientX;
@@ -409,6 +412,7 @@ layout: home
             setTimeout(() => this.style.display = 'none', 0);
         });
 
+
         item.addEventListener("touchmove", function(e) {
             e.preventDefault();
             const touch = e.touches[0];
@@ -416,12 +420,11 @@ layout: home
             const currentY = touch.clientY;
 
             if (draggingClone) {
-                draggingClone.style.left = `${currentX - this.initialX}px`;
-                draggingClone.style.top = `${currentY - this.initialY}px`;
+                draggingClone.style.left = `${currentX - this.clientWidth / 2}px`; // Adjust the position
+                draggingClone.style.top = `${currentY - this.clientHeight / 2}px`; // Adjust the position
             }
 
-
-            const elements = document.elementsFromPoint(currentX - this.clientWidth / 2, currentY - this.clientHeight / 2);
+            const elements = document.elementsFromPoint(currentX, currentY);
             const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
 
             if (target) {
@@ -429,6 +432,7 @@ layout: home
                 this.overItem = target;
             }
         });
+
 
         item.addEventListener("touchend", function() {
             setTimeout(() => {
@@ -459,6 +463,7 @@ layout: home
 
             this.overItem = null;
         });
+
 
         item.addEventListener("touchcancel", function() {
             this.style.border = "1px solid #000";
