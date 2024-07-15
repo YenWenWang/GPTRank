@@ -79,6 +79,9 @@ layout: home
             margin-bottom: 10px;
             cursor: pointer; /* This changes the cursor to a pointer */
         }
+        .question-block strong {
+            font-size: 1.2em; /* Increase the font size of the question title */
+        }
         .right-align {
             float: right;
             margin-left: 10px;
@@ -94,7 +97,6 @@ layout: home
         }
         .list-question {
             padding: 10px;
-            border-bottom: 1px solid #ccc;
             word-wrap: break-word;  /* Ensure words wrap within the container */
             overflow-wrap: break-word; /* Ensure compatibility */
         }
@@ -255,7 +257,7 @@ layout: home
                             listItem.innerHTML = `
                                 <div class="question-block">
                                     <p>
-                                        <body style="font-size:18px"><strong>${question.question.Title}</strong></body>
+                                        <strong>${question.question.Title}</strong>
                                         <span class="right-align">(Average: ${Math.round(question.question.AverageScore)} Played: ${question.question.Popularity})</span>
                                     </p>
                                 </div>
