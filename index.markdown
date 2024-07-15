@@ -80,8 +80,6 @@ layout: home
             margin-left: 10px;
         }
         .dragging {
-            width: 100%; /* Ensure the cloned item retains the same width */
-            height: auto; /* Ensure the cloned item retains the same height */
             opacity: 0.5;
             background-color: #f0f0f0;
             position: absolute;
@@ -134,9 +132,6 @@ layout: home
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="http://code.jquery.com/jquery.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.8.17/jquery-ui.min.js"></script>
-    <script src="jquery.ui.touch-punch.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
@@ -394,6 +389,89 @@ layout: home
                     }
                 });
 //
+                // Touch events for smartphones
+                item.addEventListener("touchstart", function(e) {
+                    e.preventDefault();
+                    const touch = e.touches[0];
+                    const rect = this.getBoundingClientRect();
+                    draggingClone = this.cloneNode(true);
+                    document.body.appendChild(draggingClone);
+//
+                    this.initialX = touch.clientX;
+                    this.initialY = touch.clientY;
+                    this.startX = touch.clientX;
+                    this.startY = touch.clientY;
+                    this.style.position = 'absolute';
+                    this.style.zIndex = '1000';
+                    this.style.width = `${rect.width}px`;
+//
+                    setTimeout(() => this.style.display = 'none', 0);
+                });
+//
+                item.addEventListener("touchmove", function(e) {
+                    e.preventDefault();
+                    draggedItem = this;
+                    const rect = this.getBoundingClientRect();
+                    const touch = e.touches[0];
+                    const currentX = touch.clientX;
+                    const currentY = touch.clientY;
+//
+                    if (draggingClone) {
+                        draggingClone.style.left = `${currentX - rect.width / 2}px`; // Adjust the position
+                        draggingClone.style.top = `${currentY - rect.height / 2}px`; // Adjust the position
+                    }
+//
+                    const elements = document.elementsFromPoint(currentX, currentY);
+                    const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
+//
+                    if (target) {
+                        target.style.border = "2px dashed #000";
+                        this.overItem = target;
+                    }
+                });
+//
+                item.addEventListener("touchend", function() {
+                    setTimeout(() => {
+                        this.style.display = 'block';
+                        draggedItem = null;
+                        if (draggingClone) {
+                            document.body.removeChild(draggingClone);
+                            draggingClone = null;
+                        }
+                    }, 0);
+//
+                    this.style.position = 'static';
+                    this.style.zIndex = '0';
+//
+                    if (this.overItem) {
+                        this.overItem.style.border = "1px solid #000";
+                        if (draggedItem !== this.overItem) {
+                            let allItems = [...document.querySelectorAll(".sortable-item")];
+                            let draggedIndex = allItems.indexOf(draggedItem);
+                            let targetIndex = allItems.indexOf(this.overItem);
+                            if (draggedIndex < targetIndex) {
+                                this.overItem.parentNode.insertBefore(draggedItem, this.overItem.nextSibling);
+                            } else {
+                                this.overItem.parentNode.insertBefore(draggedItem, this.overItem);
+                            }
+                        }
+                    }
+//
+                    this.overItem = null;
+                });
+//
+                item.addEventListener("touchcancel", function() {
+                    if (draggedItem !== this) {
+                        let allItems = [...document.querySelectorAll(".sortable-item")];
+                        let draggedIndex = allItems.indexOf(draggedItem);
+                        let targetIndex = allItems.indexOf(this);
+                        if (draggedIndex < targetIndex) {
+                            this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                        } else {
+                            this.parentNode.insertBefore(draggedItem, this);
+                        }
+                    }
+                });
             });
 //
         }
