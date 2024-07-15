@@ -398,8 +398,8 @@ layout: home
                     const rect = this.getBoundingClientRect();
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
-                    draggingClone.style.left = `${touch.clientX}px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY}px`; // Set the initial position
+                    draggingClone.style.left = `${touch.clientX-rect.width} px`; // Set the initial position
+                    draggingClone.style.top = `${touch.clientY-rect.height} px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
                     this.initialX = touch.clientX;
