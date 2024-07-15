@@ -81,8 +81,12 @@ layout: home
             margin-left: 10px;
         }
         .dragging {
-            opacity: 0.5;
-        }
+    opacity: 0.5;
+    background-color: #f0f0f0;
+    position: absolute;
+    pointer-events: none;
+    z-index: 1000;
+}
     </style>
 </head>
 <body>
@@ -342,53 +346,58 @@ layout: home
         function initializeDragAndDrop() {
     const sortableItems = document.querySelectorAll(".sortable-item");
     let draggedItem = null;
+    let draggingClone = null;  // Add a clone for dragging
 
     sortableItems.forEach(item => {
-        item.addEventListener("dragstart", function() {
+        item.addEventListener("dragstart", function(e) {
             draggedItem = this;
-            this.classList.add("dragging");
+            draggingClone = this.cloneNode(true); // Clone the item being dragged
+            draggingClone.classList.add('dragging'); // Add class to the clone
+
+            document.body.appendChild(draggingClone); // Append the clone to the body
+
+            const rect = this.getBoundingClientRect();
+            draggingClone.style.width = `${rect.width}px`;
+            draggingClone.style.height = `${rect.height}px`;
+
+            // Position the clone at the mouse position
+            draggingClone.style.left = `${e.pageX - rect.width / 2}px`;
+            draggingClone.style.top = `${e.pageY - rect.height / 2}px`;
+
             setTimeout(() => this.style.display = 'none', 0);
         });
 
         item.addEventListener("dragend", function() {
-            setTimeout(() => {
-                this.style.display = 'block';
-                this.classList.remove("dragging");
-                draggedItem = null;
-            }, 0);
-        });
+    setTimeout(() => {
+        this.style.display = 'block';
+        draggedItem = null;
+        document.body.removeChild(draggingClone); // Remove the clone
+        draggingClone = null;
+    }, 0);
+    this.style.border = "1px solid #000";  // Reset border
+});
 
-        item.addEventListener("dragover", function(e) {
-            e.preventDefault();
-        });
-
-        item.addEventListener("dragenter", function(e) {
-            e.preventDefault();
-            this.style.border = "2px dashed #000";
-        });
-
-        item.addEventListener("dragleave", function() {
-            this.style.border = "1px solid #000";
-        });
-
-        item.addEventListener("drop", function() {
-            this.style.border = "1px solid #000";
-            if (draggedItem !== this) {
-                let allItems = [...document.querySelectorAll(".sortable-item")];
-                let draggedIndex = allItems.indexOf(draggedItem);
-                let targetIndex = allItems.indexOf(this);
-                if (draggedIndex < targetIndex) {
-                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
-                } else {
-                    this.parentNode.insertBefore(draggedItem, this);
-                }
-            }
-        });
+item.addEventListener("drop", function() {
+    this.style.border = "1px solid #000";
+    if (draggedItem !== this) {
+        let allItems = [...document.querySelectorAll(".sortable-item")];
+        let draggedIndex = allItems.indexOf(draggedItem);
+        let targetIndex = allItems.indexOf(this);
+        if (draggedIndex < targetIndex) {
+            this.parentNode.insertBefore(draggedItem, this.nextSibling);
+        } else {
+            this.parentNode.insertBefore(draggedItem, this);
+        }
+    }
+});
 
         // Touch events for smartphones
         item.addEventListener("touchstart", function(e) {
             draggedItem = this;
-            this.classList.add("dragging");
+            draggingClone = this.cloneNode(true);
+            draggingClone.classList.add('dragging');
+            document.body.appendChild(draggingClone);
+
             setTimeout(() => this.style.display = 'none', 0);
             const touch = e.touches[0];
             this.initialX = touch.clientX;
@@ -407,7 +416,11 @@ layout: home
             this.style.left = `${currentX - this.initialX}px`;
             this.style.top = `${currentY - this.initialY}px`;
 
-            // Check if dragged over another item
+            if (draggingClone) {
+                draggingClone.style.left = `${currentX - this.initialX}px`;
+                draggingClone.style.top = `${currentY - this.initialY}px`;
+            }
+
             const elements = document.elementsFromPoint(currentX, currentY);
             const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
 
@@ -418,38 +431,47 @@ layout: home
         });
 
         item.addEventListener("touchend", function() {
-    setTimeout(() => {
-        this.style.display = 'block';
-        this.classList.remove("dragging");
-        draggedItem = null;
-    }, 0);
+            setTimeout(() => {
+                this.style.display = 'block';
+                draggedItem = null;
+                if (draggingClone) {
+                    document.body.removeChild(draggingClone);
+                    draggingClone = null;
+                }
+            }, 0);
 
-    this.style.position = 'static';
-    this.style.zIndex = '0';
-    this.style.border = "1px solid #000";
+            this.style.position = 'static';
+            this.style.zIndex = '0';
 
-    if (this.overItem) {
-        this.overItem.style.border = "1px solid #000";
-        if (draggedItem !== this.overItem) {
-            let allItems = [...document.querySelectorAll(".sortable-item")];
-            let draggedIndex = allItems.indexOf(draggedItem);
-            let targetIndex = allItems.indexOf(this.overItem);
-            if (draggedIndex < targetIndex) {
-                this.overItem.parentNode.insertBefore(draggedItem, this.overItem.nextSibling);
-            } else {
-                this.overItem.parentNode.insertBefore(draggedItem, this.overItem);
+            if (this.overItem) {
+                this.overItem.style.border = "1px solid #000";
+                if (draggedItem !== this.overItem) {
+                    let allItems = [...document.querySelectorAll(".sortable-item")];
+                    let draggedIndex = allItems.indexOf(draggedItem);
+                    let targetIndex = allItems.indexOf(this.overItem);
+                    if (draggedIndex < targetIndex) {
+                        this.overItem.parentNode.insertBefore(draggedItem, this.overItem.nextSibling);
+                    } else {
+                        this.overItem.parentNode.insertBefore(draggedItem, this.overItem);
+                    }
+                }
             }
-        }
-    }
 
-    this.overItem = null;
-});
+            this.overItem = null;
+        });
 
         item.addEventListener("touchcancel", function() {
             this.style.border = "1px solid #000";
             this.style.position = 'static';
             this.style.zIndex = '0';
         });
+    });
+
+    document.addEventListener("drag", function(e) {
+        if (draggingClone) {
+            draggingClone.style.left = `${e.pageX - draggingClone.offsetWidth / 2}px`;
+            draggingClone.style.top = `${e.pageY - draggingClone.offsetHeight / 2}px`;
+        }
     });
 }
 //
