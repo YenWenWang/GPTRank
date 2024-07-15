@@ -351,7 +351,6 @@ layout: home
 //
             sortableItems.forEach(item => {
                 item.addEventListener("dragstart", function(e) {
-                    const rect = this.getBoundingClientRect();
                     draggedItem = this;
                     setTimeout(() => this.style.display = 'none', 0);
                 });
@@ -397,22 +396,8 @@ layout: home
                     e.preventDefault();
                     const touch = e.touches[0];
                     const rect = this.getBoundingClientRect();
-                    draggingClone = this.cloneNode(true);
-                    draggingClone.classList.add('dragging');
-                    draggingClone.style.left = `${touch.clientX - rect.width / 2} px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY - rect.height / 2}px`; // Set the initial position
-                    draggingClone.style.width = `${rect.width}px`;
-                    draggingClone.style.top = `${rect.height}px`;
-                    document.body.appendChild(draggingClone);
-//
-                    this.initialX = touch.clientX;
-                    this.initialY = touch.clientY;
-                    this.startX = touch.clientX;
-                    this.startY = touch.clientY;
-                    this.style.position = 'absolute';
-                    this.style.zIndex = '1000';
-                    this.style.width = `${rect.width}px`;
-//
+                    draggingClone = this;
+                    
                     setTimeout(() => this.style.display = 'none', 0);
                 });
 //
