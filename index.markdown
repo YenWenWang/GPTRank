@@ -425,8 +425,8 @@ layout: home
             const touch = e.touches[0];
             const currentX = touch.clientX;
             const currentY = touch.clientY;
-            draggingClone.style.left = `${currentX - draggingClone.offsetWidth / 2}px`;
-            draggingClone.style.top = `${currentY - draggingClone.offsetHeight / 2}px`;
+            draggingClone.style.left = `${currentX}px`;
+            draggingClone.style.top = `${currentY}px`;
 
             const elements = document.elementsFromPoint(currentX, currentY);
             const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
