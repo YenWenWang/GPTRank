@@ -20,7 +20,7 @@ layout: home
         }
         h4{
             text-align: center;
-            font-size: 2.5vw;
+            font-size: 2.5em;
             font-family: Arial, sans-serif;
         }
         #search-sort-container {
@@ -116,7 +116,6 @@ layout: home
             overflow-wrap: break-word; /* Ensure compatibility */
         }
         .item-rank {
-            width: 300px; /* Width of each histogram */
             margin-bottom: 20px; /* Space below each histogram */
         }
         @media screen and (max-width: 600px) {
@@ -129,10 +128,6 @@ layout: home
                 display: block;
                 text-align: left;
                 margin-left: 0;
-            }
-            .item-rank canvas {
-                width: 300px !important;
-                height: 150px !important;
             }
         }
         .item-title {
