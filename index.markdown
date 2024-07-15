@@ -395,6 +395,13 @@ layout: home
                 // Touch events for smartphones
                 item.addEventListener("touchstart", function(e) {
                     e.preventDefault();
+                    this.initialX = touch.clientX;
+                    this.initialY = touch.clientY;
+                    this.startX = touch.clientX;
+                    this.startY = touch.clientY;
+                    this.style.position = 'absolute';
+                    this.style.zIndex = '1000';
+                    this.style.width = `${rect.width}px`;
                     const touch = e.touches[0];
                     rect = this.getBoundingClientRect();
                     draggingClone = this.cloneNode(true);
@@ -403,13 +410,6 @@ layout: home
                     draggingClone.style.top = `${touch.clientY-rect.height/2}px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
-                    this.initialX = touch.clientX;
-                    this.initialY = touch.clientY;
-                    this.startX = touch.clientX;
-                    this.startY = touch.clientY;
-                    this.style.position = 'absolute';
-                    this.style.zIndex = '1000';
-                    this.style.width = `${rect.width}px`;
 //
                     setTimeout(() => this.style.display = 'none', 0);
                 });
@@ -445,8 +445,8 @@ layout: home
                         }
                     }, 0);
 //
-                    this.style.position = 'absolute';
-                    this.style.zIndex = '1000';
+                    this.style.position = 'static';
+                    this.style.zIndex = '0';
 //
                     if (this.overItem) {
                         this.overItem.style.border = "1px solid #000";
