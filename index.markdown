@@ -80,6 +80,8 @@ layout: home
             margin-left: 10px;
         }
         .dragging {
+            width: 100%; /* Ensure the cloned item retains the same width */
+            height: auto; /* Ensure the cloned item retains the same height */
             opacity: 0.5;
             background-color: #f0f0f0;
             position: absolute;
@@ -396,8 +398,8 @@ layout: home
                     const rect = this.getBoundingClientRect();
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
-                    draggingClone.style.left = `${touch.clientX - rect.width / 2} px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY - rect.height / 2}px`; // Set the initial position
+                    draggingClone.style.left = `1px`; // Set the initial position
+                    draggingClone.style.top = `1px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
                     this.initialX = touch.clientX;
