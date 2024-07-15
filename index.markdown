@@ -349,7 +349,7 @@ layout: home
 
         item.addEventListener("dragend", function() {
             this.style.display = 'block';
-            draggedItem = null;
+                draggedItem = null;
             setTimeout(() => {
                 this.style.display = 'block';
             }, 0);
@@ -442,6 +442,13 @@ layout: home
             this.style.position = 'static';
             this.style.zIndex = '0';
         });
+    });
+
+    document.addEventListener("drag", function(e) {
+        if (draggingClone) {
+            draggingClone.style.left = `${e.pageX - draggingClone.offsetWidth / 2}px`;
+            draggingClone.style.top = `${e.pageY - draggingClone.offsetHeight / 2}px`;
+        }
     });
 }
 //
