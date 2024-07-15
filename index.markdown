@@ -429,6 +429,7 @@ layout: home
             this.style.border = "1px solid #000";
         });
     });
+}
 //
         async function submitRanks(questionKey) {
             const sortableList = document.getElementById("sortableList");
