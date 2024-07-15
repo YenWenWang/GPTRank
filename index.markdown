@@ -13,9 +13,14 @@ layout: home
             text-align: center; 
             font-family: Arial, sans-serif;
         }
-        h4{
+        h3{
             text-align: center;
             font-size: 4vw;
+            font-family: Arial, sans-serif;
+        }
+        h4{
+            text-align: center;
+            font-size: 2.5vw;
             font-family: Arial, sans-serif;
         }
         #search-sort-container {
@@ -54,6 +59,11 @@ layout: home
             border: 1px solid #ccc;
             background-color: #fff;
             cursor: move;
+        }
+        #rankCanvas {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px; /* Space between each histogram */
         }
         .sortable-list {
             margin-top: 20px;
@@ -105,6 +115,10 @@ layout: home
             word-wrap: break-word;  /* Ensure words wrap within the container */
             overflow-wrap: break-word; /* Ensure compatibility */
         }
+        .item-rank {
+            width: 300px; /* Width of each histogram */
+            margin-bottom: 20px; /* Space below each histogram */
+        }
         @media screen and (max-width: 600px) {
             .question-block {
                 padding: 5px;
@@ -116,6 +130,13 @@ layout: home
                 text-align: left;
                 margin-left: 0;
             }
+            .item-rank canvas {
+                width: 300px !important;
+                height: 150px !important;
+            }
+        }
+        .item-title {
+            font-size: 1.5em;
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -158,8 +179,17 @@ layout: home
         <div id="results">
             <!-- Results will be dynamically added here -->
         </div>
+        <h4 id="detailedAnswerHeader">
+            <br>How ChatGPT ranked
+        </h4>
         <div id="detailedAnswer">
             <!-- Answers will be dynamically added here -->
+        </div>
+        <h4 id="rankCanvasHeader">
+            <br>How other people ranked
+        </h4>
+        <div id="rankCanvas" width="400" height="200">
+            <!-- additiopnal Ranks will be dynamically added here -->
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -191,8 +221,11 @@ layout: home
 //
         async function displayQuestions() {
             document.getElementById("histogramCanvas").style.display = "none";
+            document.getElementById("rankCanvas").style.display = "none";
+            document.getElementById("rankCanvasHeader").style.display = "none";
             document.getElementById("goBack").style.display = 'none';
             document.getElementById("detailedAnswer").style.display = 'none';
+            document.getElementById("detailedAnswerHeader").style.display = "none";
         //
             const questionList = document.getElementById("questionList");
             questionList.innerHTML = "";
@@ -340,6 +373,10 @@ layout: home
             document.getElementById("questionList").style.display = 'block';
             document.getElementById("pagination").style.display = 'block';
             document.getElementById("histogramCanvas").style.display = "none";
+            document.getElementById("rankCanvas").style.display = "none";
+            document.getElementById("rankCanvasHeader").style.display = "none";
+            document.getElementById("detailedAnswer").style.display = "none";
+            document.getElementById("detailedAnswerHeader").style.display = "none";
             displayQuestions();
         });
 //
@@ -659,117 +696,216 @@ layout: home
             }
         }
 //
-        async function showResults(questionKey,score){
-            const results = document.getElementById("results");
-            const detailedAnswer = document.getElementById("detailedAnswer");
-//
-            // Fetch each score from Firebase
-            const eachScoreSnapshot = await get(ref(db, `Questions/${questionKey}/EachScore`));
-            const eachScores = Object.values(eachScoreSnapshot.val()).map(Number);
-//
-            // Process histogram data
-            const histogramData = Array(10).fill(0);
-            eachScores.forEach(s => {
-                const index = Math.min(Math.floor(s / 10), 9);
-                histogramData[index]++;
-            });
-            //get percentile
-            const percentile = (arr, val) => {
-                let count = 0;
-                arr.forEach(v => {
-                    if (v < val) {
-                    count++;
-                    } else if (v == val) {
-                    count += 0.5;
+async function showResults(questionKey, score) {
+    const results = document.getElementById("results");
+    const detailedAnswer = document.getElementById("detailedAnswer");
+    const rankCanvasContainer = document.getElementById("rankCanvas");
+
+    // Fetch each score from Firebase
+    const eachScoreSnapshot = await get(ref(db, `Questions/${questionKey}/EachScore`));
+    const eachScores = Object.values(eachScoreSnapshot.val()).map(Number);
+    const popularity = eachScores.length;
+
+
+    // Process histogram data
+    const histogramData = Array(10).fill(0);
+    eachScores.forEach(s => {
+        const index = Math.min(Math.floor(s / 10), 9);
+        histogramData[index]++;
+    });
+
+    histogramData.forEach(function(part, index, theArray) {
+        theArray[index] = theArray[index]/popularity * 100;
+    });
+
+    // Get percentile
+    const percentile = (arr, val) => {
+        let count = 0;
+        arr.forEach(v => {
+            if (v < val) {
+                count++;
+            } else if (v == val) {
+                count += 0.5;
+            }
+        });
+        return 100 - (100 * count / arr.length);
+    }
+
+    document.getElementById("submitRanks").style.display = 'none';
+    results.style.display = 'block';
+
+    results.innerHTML = "";
+    let resultMessage = "";
+    if (score === 100) {
+        resultMessage = '<h3>Insane! <br>Your score is <strong>' + Math.round(score) + '</strong>!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%</strong></h3>';
+    } else if (score >= 80) {
+        resultMessage = '<h3>Congratulations! <br>Your score is <strong>' + Math.round(score) + '</strong>!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%</strong></h3>';
+    } else if (score >= 60) {
+        resultMessage = '<h3>Not bad! <br>Your score is <strong>' + Math.round(score) + '</strong>!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%</strong></h3>';
+    } else {
+        resultMessage = '<h3>Next time will be better! <br>Your score is <strong>' + Math.round(score) + '</strong>!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%</strong></h3>';
+    }
+    results.innerHTML = `<p>${resultMessage}</p>`
+
+    // Get the histogramCanvas context
+    const histogramCanvas = document.getElementById("histogramCanvas");
+    histogramCanvas.style.display = "block";
+    const ctxhist = histogramCanvas.getContext('2d');
+    // Clear the previous chart if exists
+    if (window.myChart) {
+        window.myChart.destroy();
+    }
+    // Create the chart
+    window.myChart = new Chart(ctxhist, {
+        type: 'bar',
+        data: {
+            labels: ['0-10', '10-20', '20-30', '30-40', '40-50', '50-60', '60-70', '70-80', '80-90', '90-100'],
+            datasets: [{
+                label: 'Percentage of Scores',
+                data: histogramData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%'; // Convert to percentage
+                        }
                     }
-                });
-                return 100-(100 * count / arr.length);
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false // Disable the legend
+                },
+                tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return Number.parseFloat(tooltipItem.raw).toFixed(2) + '%'; // Add '%' to tooltip label
+                                }
+                            }
+                        },
+                annotation: {
+                    annotations: {
+                        line1: {
+                            type: 'line',
+                            scaleID: 'x',
+                            value: Math.floor(score / 10),
+                            borderColor: 'red',
+                            borderWidth: 2,
+                            label: {
+                                enabled: true,
+                                content: 'Your Score'
+                            }
+                        }
+                    }
+                }
             }
-//
-            document.getElementById("submitRanks").style.display = 'none';
-            results.style.display = 'block';
-//
-            results.innerHTML = "";
-            let resultMessage = "";
-            if (score===100) {
-                resultMessage = '<h4>Insane! <br>Your score is: ' + Math.round(score) + '!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%<.strong></h4>';
-            }else if (score>=80) {
-                resultMessage = '<h4>Congratulations! <br>Your score is <strong>' + Math.round(score) + '!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%<.strong></h4>';
-            }else if (score>=60) {
-                resultMessage = '<h4>Not bad! <br>Your score is: ' + Math.round(score) + '!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%<.strong></h4>';
-            }else{
-                resultMessage = '<h4>Next time will be better! <br>Your score is: ' + Math.round(score) + '!<br>You are at top <strong>' + Math.ceil(percentile(eachScores, score)) + '%<.strong></h4>';
-            }
-            results.innerHTML = `<p>${resultMessage}</p>`
-//
-            // Get the canvas context
-            const canvas = document.getElementById("histogramCanvas");
-            canvas.style.display = "block";
-            const ctx = canvas.getContext('2d');
-            // Clear the previous chart if exists
-            if (window.myChart) {
-                window.myChart.destroy();
-            }
-            // Create the chart
-            window.myChart = new Chart(ctx, {
+        }
+    });
+    document.getElementById("detailedAnswerHeader").style.display = "block";
+    document.getElementById("rankCanvasHeader").style.display = "block";
+    detailedAnswer.style.display = "block";
+    detailedAnswer.innerHTML = "" // Clear previous content
+    rankCanvasContainer.style.display = "block";
+    rankCanvasContainer.innerHTML = "";
+
+    // Fetch and display rankings
+    const allRankSnapshot = await get(ref(db, `Questions/${questionKey}/AllRank`));
+    if (allRankSnapshot.exists()) {
+        const allRankData = allRankSnapshot.val();
+
+        // Get the maximum rank across all items
+        const maxRank = Math.max(...Object.values(allRankData).flatMap(item => Object.keys(item).map(Number)));
+
+        // Generate rank labels
+        const rankLabels = Array.from({ length: maxRank }, (_, i) => (i + 1).toString());
+
+        Object.keys(allRankData).forEach(itemKey => {
+            const itemData = allRankData[itemKey];
+
+            // Calculate the percentage for each rank
+            const itemRanks = rankLabels.map(label => (itemData[label] || 0) / popularity * 100);
+
+            const itemDiv = document.createElement("div");
+            itemDiv.className = "item-rank";
+
+            const itemTitle = document.createElement("h5");
+            itemTitle.className = "item-title";
+            itemTitle.textContent = itemKey;
+            itemDiv.appendChild(itemTitle);
+
+            const itemCanvas = document.createElement("canvas");
+            itemDiv.appendChild(itemCanvas);
+            rankCanvasContainer.appendChild(itemDiv);
+
+            const itemCtx = itemCanvas.getContext('2d');
+            new Chart(itemCtx, {
                 type: 'bar',
                 data: {
-                    labels: ['0-10', '10-20', '20-30', '30-40', '40-50', '50-60', '60-70', '70-80', '80-90', '90-100'],
+                    labels: rankLabels,
                     datasets: [{
-                        label: 'Number of Scores',
-                        data: histogramData,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
+                        label: `Ranks for ${itemKey}`,
+                        data: itemRanks,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
                         borderWidth: 1
                     }]
                 },
                 options: {
                     scales: {
                         y: {
-                            beginAtZero: true
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%'; // Convert to percentage
+                                }
+                            }
                         }
                     },
                     plugins: {
-                        annotation: {
-                            annotations: {
-                                line1: {
-                                    type: 'line',
-                                    scaleID: 'x',
-                                    value: Math.floor(score / 10),
-                                    borderColor: 'red',
-                                    borderWidth: 2,
-                                    label: {
-                                        enabled: true,
-                                        content: 'Your Score'
-                                    }
+                        legend: {
+                            display: false // Disable the legend
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return Number.parseFloat(tooltipItem.raw).toFixed(2) + '%'; // Add '%' to tooltip label
                                 }
                             }
                         }
                     }
                 }
             });
-            detailedAnswer.style.display = "block";
-            detailedAnswer.innerHTML=""// Clear previous content
-//            detailedAnswer.appendChild("ChatGPT's Answer");
-            // Query the answers
-            const answerQuery = await query(ref(db, `Questions/${questionKey}/Answer`),orderByChild("Rank"));
-            const snapshot = await get(answerQuery);
-            if (snapshot.exists()) {
-                let answerWithKeys = [];
-                snapshot.forEach((childSnapshot) => {
-                    answerWithKeys.push({
-                        key: childSnapshot.key,
-                        answer: childSnapshot.val()
-                    });
-                });
-                answerWithKeys.forEach((item) => {
-                    const listItem = document.createElement("div");
-                    listItem.className = "list-rank";
-                    listItem.innerHTML = `<p><strong>${item.answer.Rank}. ${item.key}:</strong>\t${item.answer.Detail}</p>`;
-                    detailedAnswer.appendChild(listItem);
-                });
-            }
+        });
+    }
+
+    // Query the answers
+    const answerQuery = await query(ref(db, `Questions/${questionKey}/Answer`), orderByChild("Rank"));
+    const snapshot = await get(answerQuery);
+    if (snapshot.exists()) {
+        let answerWithKeys = [];
+        snapshot.forEach((childSnapshot) => {
+            answerWithKeys.push({
+                key: childSnapshot.key,
+                answer: childSnapshot.val()
+            });
+        });
+        answerWithKeys.forEach((item) => {
+            const listItem = document.createElement("div");
+            listItem.className = "list-rank";
+            listItem.innerHTML = `<p><strong>${item.answer.Rank}. ${item.key}:</strong>\t${item.answer.Detail}</p>`;
+            detailedAnswer.appendChild(listItem);
+        });
+    }
 }
-        displayQuestions();
+
+
+    displayQuestions();
     </script>
 </body>
