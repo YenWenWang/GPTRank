@@ -397,6 +397,8 @@ layout: home
                     e.preventDefault();
                     const touch = e.touches[0];
                     rect = this.getBoundingClientRect();
+                    this.style.position = 'absolute';
+                    this.style.zIndex = '1000';
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
                     draggingClone.style.left = `${touch.clientX-rect.width/2}px`; // Set the initial position
