@@ -378,7 +378,7 @@ layout: home
                 if (draggedIndex < targetIndex) {
                     this.parentNode.insertBefore(draggedItem, this.nextSibling);
                 } else {
-                    this.parentNode.insertAfter(draggedItem, this);
+                    this.parentNode.insertBefore(draggedItem, this);
                 }
             }
         });
