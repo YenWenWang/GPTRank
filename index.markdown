@@ -402,8 +402,8 @@ layout: home
 //
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
-                    draggingClone.style.left = `${touch.clientX-rect.width/2}px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY-rect.height/2}px`; // Set the initial position
+                    draggingClone.style.left = `${touch.pageX-rect.width/2}px`; // Set the initial position
+                    draggingClone.style.top = `${touch.pageY-rect.height/2}px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
                     this.initialX = touch.clientX;
@@ -422,11 +422,11 @@ layout: home
                     const currentY = touch.clientY;
 //
                     if (draggingClone) {
-                        draggingClone.style.left = `${currentX-rect.width/2}px`; // Adjust the position
-                        draggingClone.style.top = `${currentY-rect.height/2}px`; // Adjust the position
+                        draggingClone.style.left = `${touch.pageX-rect.width/2}px`; // Adjust the position
+                        draggingClone.style.top = `${touch.pageY-rect.height/2}px`; // Adjust the position
                     }
 //
-                    const elements = document.elementsFromPoint(currentX, currentY);
+                    const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
                     const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
 //
                     if (target) {
