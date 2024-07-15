@@ -148,7 +148,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 10;
+        const questionsPerPage = 3;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
@@ -337,16 +337,10 @@ layout: home
             await showResults(questionKey,score);
         });
 //
-function updatePosition(e, item) {
-    const coords = e.touches ? getTouchCoords(e) : { x: e.clientX, y: e.clientY };
-    item.style.position = 'absolute';
-    item.style.left = `${coords.x}px`;
-    item.style.top = `${coords.y}px`;
-}
-function initializeDragAndDrop() {
+        function initializeDragAndDrop() {
     const sortableItems = document.querySelectorAll(".sortable-item");
     let draggedItem = null;
-    let offsetX, offsetY;
+    let startY, startX;
 
     const getTouchCoords = (e) => {
         return {
@@ -356,86 +350,80 @@ function initializeDragAndDrop() {
     };
 
     sortableItems.forEach(item => {
-        item.addEventListener("mousedown", function(e) {
+        item.addEventListener("dragstart", function() {
             draggedItem = this;
-            offsetX = e.clientX - this.getBoundingClientRect().left;
-            offsetY = e.clientY - this.getBoundingClientRect().top;
-            this.style.position = 'absolute';
-            this.style.zIndex = '1000';
-            document.body.appendChild(this);
-            updatePosition(e, this);
+            setTimeout(() => this.style.display = 'none', 0);
         });
 
-        item.addEventListener("mousemove", function(e) {
-            if (draggedItem) {
-                updatePosition(e, draggedItem);
-            }
-        });
-
-        item.addEventListener("mouseup", function() {
-            if (draggedItem) {
-                finalizeDrag(draggedItem);
+        item.addEventListener("dragend", function() {
+            setTimeout(() => {
+                this.style.display = 'block';
                 draggedItem = null;
-            }
+            }, 0);
         });
 
-        item.addEventListener("touchstart", function(e) {
+        item.addEventListener("dragover", function(e) {
             e.preventDefault();
-            draggedItem = this;
-            const coords = getTouchCoords(e);
-            offsetX = coords.x - this.getBoundingClientRect().left;
-            offsetY = coords.y - this.getBoundingClientRect().top;
-            this.style.position = 'absolute';
-            this.style.zIndex = '1000';
-            document.body.appendChild(this);
-            updatePosition(e, this);
         });
 
-        item.addEventListener("touchmove", function(e) {
+        item.addEventListener("dragenter", function(e) {
             e.preventDefault();
-            if (draggedItem) {
-                updatePosition(e, draggedItem);
-            }
+            this.style.border = "2px dashed #000";
         });
 
-        item.addEventListener("touchend", function() {
-            if (draggedItem) {
-                finalizeDrag(draggedItem);
-                draggedItem = null;
-            }
+        item.addEventListener("dragleave", function() {
+            this.style.border = "1px solid #000";
         });
-    });
 
-    function finalizeDrag(item) {
-        const closestItem = getClosestItem(item);
-        if (closestItem) {
-            closestItem.parentNode.insertBefore(item, closestItem);
-        } else {
-            item.parentNode.appendChild(item);
-        }
-        item.style.position = 'static';
-        item.style.zIndex = '';
-    }
-
-    function getClosestItem(item) {
-        const items = Array.from(document.querySelectorAll(".sortable-item"));
-        const itemRect = item.getBoundingClientRect();
-        let closestItem = null;
-        let minDistance = Infinity;
-
-        items.forEach(otherItem => {
-            if (otherItem !== item) {
-                const rect = otherItem.getBoundingClientRect();
-                const distance = Math.abs(rect.top - itemRect.bottom);
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    closestItem = otherItem;
+        item.addEventListener("drop", function() {
+            this.style.border = "1px solid #000";
+            if (draggedItem !== this) {
+                let allItems = [...document.querySelectorAll(".sortable-item")];
+                let draggedIndex = allItems.indexOf(draggedItem);
+                let targetIndex = allItems.indexOf(this);
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedItem, this);
                 }
             }
         });
 
-        return closestItem;
-    }
+        // Touch events
+        item.addEventListener("touchstart", function(e) {
+            draggedItem = this;
+            const coords = getTouchCoords(e);
+            startY = coords.y;
+            startX = coords.x;
+            this.style.display = 'none';
+        });
+
+        item.addEventListener("touchmove", function(e) {
+            e.preventDefault();
+            const coords = getTouchCoords(e);
+            const deltaY = coords.y - startY;
+            const deltaX = coords.x - startX;
+            if (Math.abs(deltaY) > 10 || Math.abs(deltaX) > 10) {
+                // Optional: add your own logic to handle the touch drag visuals here
+            }
+        });
+
+        item.addEventListener("touchend", function(e) {
+            e.preventDefault();
+            this.style.display = 'block';
+            if (draggedItem !== this) {
+                let allItems = [...document.querySelectorAll(".sortable-item")];
+                let draggedIndex = allItems.indexOf(draggedItem);
+                let targetIndex = allItems.indexOf(this);
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedItem, this);
+                }
+            }
+            draggedItem = null;
+        });
+    });
 }
 //
         async function submitRanks(questionKey) {
