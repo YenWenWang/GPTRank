@@ -469,7 +469,7 @@ layout: home
                 item.addEventListener("touchcancel", function() {
                     const rect = this.getBoundingClientRect();
                     this.style.border = "1px solid #000";
-                    this.style.width = `${rect.width}px`;
+                    this.style.width = draggingClone.style.width;
                     if (draggedItem !== this) {
                         let allItems = [...document.querySelectorAll(".sortable-item")];
                         let draggedIndex = allItems.indexOf(draggedItem);
