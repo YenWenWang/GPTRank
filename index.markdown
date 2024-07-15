@@ -143,7 +143,7 @@ layout: home
                 font-family: Arial, sans-serif;
             }
             .item-title {
-                font-size: 3vw;
+                font-size: 5vw;
             }
         }
     </style>
