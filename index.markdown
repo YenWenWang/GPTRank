@@ -408,7 +408,7 @@ layout: home
                     this.startY = touch.clientY;
                     this.style.position = 'absolute';
                     this.style.zIndex = '1000';
-                    this.style.width = `${rect.width} px`;
+                    this.style.width = `${rect.width}px`;
 //
                     setTimeout(() => this.style.display = 'none', 0);
                 });
