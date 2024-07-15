@@ -401,10 +401,10 @@ layout: home
                     draggingClone.style.top = `${touch.clientY}px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
-                    this.initialX = touch.clientX;
-                    this.initialY = touch.clientY;
-                    this.startX = touch.clientX;
-                    this.startY = touch.clientY;
+                    this.initialX = touch.clientX - this.clientWidth / 2;
+                    this.initialY = touch.clientY - this.clientHeight / 2;
+                    this.startX = touch.clientX - this.clientWidth / 2;
+                    this.startY = touch.clientY - this.clientHeight / 2;
                     this.style.position = 'absolute';
                     this.style.zIndex = '1000';
                     this.style.width = `${this.clientWidth}px`;
@@ -465,6 +465,7 @@ layout: home
 //
                 item.addEventListener("touchcancel", function() {
                     this.style.border = "1px solid #000";
+                    this.style.width = `${this.clientWidth}px`;
                     if (draggedItem !== this) {
                         let allItems = [...document.querySelectorAll(".sortable-item")];
                         let draggedIndex = allItems.indexOf(draggedItem);
