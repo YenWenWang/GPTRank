@@ -155,7 +155,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 3;
+        const questionsPerPage = 10;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
@@ -416,14 +416,14 @@ layout: home
                 item.addEventListener("touchmove", function(e) {
                     e.preventDefault();
                     draggedItem = this;
-                    const rect = this.getBoundingClientRect();
                     const touch = e.touches[0];
                     const currentX = touch.clientX;
                     const currentY = touch.clientY;
+                    const rect = this.getBoundingClientRect();
 //
                     if (draggingClone) {
-                        draggingClone.style.left = `${currentX - rect.width}px`; // Adjust the position
-                        draggingClone.style.top = `${currentY - rect.height}px`; // Adjust the position
+                        draggingClone.style.left = `${currentX-rect.width/2}px`; // Adjust the position
+                        draggingClone.style.top = `${currentY-rect.height/2}px`; // Adjust the position
                     }
 //
                     const elements = document.elementsFromPoint(currentX, currentY);
