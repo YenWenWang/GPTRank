@@ -399,8 +399,8 @@ layout: home
                     const rect = this.getBoundingClientRect();
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
-                    draggingClone.style.left = `${touch.clientX - rect.width} px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY - rect.height}px`; // Set the initial position
+                    draggingClone.style.left = `${touch.clientX - rect.width / 2} px`; // Set the initial position
+                    draggingClone.style.top = `${touch.clientY - rect.height / 2}px`; // Set the initial position
                     draggingClone.style.width = `${rect.width}px`;
                     draggingClone.style.top = `${rect.height}px`;
                     document.body.appendChild(draggingClone);
@@ -419,14 +419,13 @@ layout: home
                 item.addEventListener("touchmove", function(e) {
                     e.preventDefault();
                     draggedItem = this;
-                    const rect = this.getBoundingClientRect();
                     const touch = e.touches[0];
                     const currentX = touch.clientX;
                     const currentY = touch.clientY;
 //
                     if (draggingClone) {
-                        draggingClone.style.left = `${currentX - rect.width / 2}px`; // Adjust the position
-                        draggingClone.style.top = `${currentY - rect.height / 2}px`; // Adjust the position
+                        draggingClone.style.left = `${currentX - draggingClone.style.width / 2}px`; // Adjust the position
+                        draggingClone.style.top = `${currentY - draggingClone.style.width / 2}px`; // Adjust the position
                     }
 //
                     const elements = document.elementsFromPoint(currentX, currentY);
