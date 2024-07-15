@@ -156,7 +156,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 3;
+        const questionsPerPage = 10;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
@@ -392,6 +392,10 @@ layout: home
                     }
                 });
 //
+            });
+//
+        }
+//
 function touchHandler(event) {
     var touch = event.changedTouches[0];
 
@@ -415,8 +419,6 @@ function init() {
     document.addEventListener("touchend", touchHandler, true);
     document.addEventListener("touchcancel", touchHandler, true);
 }
-        
-//
         async function submitRanks(questionKey) {
             const sortableList = document.getElementById("sortableList");
             const sortedItems = Array.from(sortableList.children);
