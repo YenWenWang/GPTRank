@@ -15,7 +15,7 @@ layout: home
         }
         h3{
             text-align: center;
-            font-size: 4vw;
+            font-size: 3.5em;
             font-family: Arial, sans-serif;
         }
         h4{
