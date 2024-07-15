@@ -118,6 +118,9 @@ layout: home
         .item-rank {
             margin-bottom: 20px; /* Space below each histogram */
         }
+        .item-title {
+            font-size: 1.5vw;
+        }
         @media screen and (max-width: 600px) {
             .question-block {
                 padding: 5px;
@@ -129,9 +132,19 @@ layout: home
                 text-align: left;
                 margin-left: 0;
             }
-        }
-        .item-title {
-            font-size: 1.5vw;
+            h3{
+                text-align: center;
+                font-size: 7vw;
+                font-family: Arial, sans-serif;
+            }
+            h4{
+                text-align: center;
+                font-size: 6vw;
+                font-family: Arial, sans-serif;
+            }
+            .item-title {
+                font-size: 3vw;
+            }
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
