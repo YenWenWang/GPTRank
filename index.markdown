@@ -255,8 +255,8 @@ layout: home
                             listItem.innerHTML = `
                                 <div class="question-block">
                                     <p>
-                                        <strong>${question.question.Title}</strong>
-                                        <span class="right-align">(Average Score: ${Math.round(question.question.AverageScore)} Played Times: ${question.question.Popularity})</span>
+                                        <body style="font-size:18px"><strong>${question.question.Title}</strong></body>
+                                        <span class="right-align">(Average: ${Math.round(question.question.AverageScore)} Played: ${question.question.Popularity})</span>
                                     </p>
                                 </div>
                             `;
