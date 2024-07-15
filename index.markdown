@@ -70,6 +70,10 @@ layout: home
             cursor: move;
         }
         .question-block {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            box-sizing: border-box;
             border: 1px solid #ccc;
             padding: 10px;
             margin-bottom: 10px;
@@ -88,7 +92,26 @@ layout: home
             pointer-events: none;
             z-index: 1000;
         }
+        .list-question {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            word-wrap: break-word;  /* Ensure words wrap within the container */
+            overflow-wrap: break-word; /* Ensure compatibility */
+        }
+        @media screen and (max-width: 600px) {
+            .question-block {
+                padding: 5px;
+                font-size: 14px;
+            }
+            .right-align {
+                float: none;
+                display: block;
+                text-align: left;
+                margin-left: 0;
+            }
+        }
     </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
     <div id="Main">
@@ -231,9 +254,12 @@ layout: home
                             listItem.className = "list-question";
                             listItem.innerHTML = `
                                 <div class="question-block">
-                                    <p><strong>${question.question.Title}</strong><span class="right-align">(Average Score: ${Math.round(question.question.AverageScore)}\tPlayed Times: ${question.question.Popularity})</span></p>
+                                    <p>
+                                        <strong>${question.question.Title}</strong>
+                                        <span class="right-align">(Average Score: ${Math.round(question.question.AverageScore)} Played Times: ${question.question.Popularity})</span>
+                                    </p>
                                 </div>
-                                `;
+                            `;
                             listItem.addEventListener('click', () => showRankingInteract(question));
                             questionList.appendChild(listItem);
                         }
