@@ -419,13 +419,14 @@ layout: home
                 item.addEventListener("touchmove", function(e) {
                     e.preventDefault();
                     draggedItem = this;
+                    const rect = this.getBoundingClientRect();
                     const touch = e.touches[0];
                     const currentX = touch.clientX;
                     const currentY = touch.clientY;
 //
                     if (draggingClone) {
-                        draggingClone.style.left = `${currentX - draggingClone.style.width / 2}px`; // Adjust the position
-                        draggingClone.style.top = `${currentY - draggingClone.style.width / 2}px`; // Adjust the position
+                        draggingClone.style.left = `${currentX - rect.width / 2}px`; // Adjust the position
+                        draggingClone.style.top = `${currentY - rect.height / 2}px`; // Adjust the position
                     }
 //
                     const elements = document.elementsFromPoint(currentX, currentY);
