@@ -406,10 +406,10 @@ layout: home
                     draggingClone.style.top = `${touch.pageY-rect.height/2}px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
-                    this.initialX = touch.pageX;
-                    this.initialY = touch.pageY;
-                    this.startX = touch.pageX;
-                    this.startY = touch.pageY;
+                    this.initialX = touch.clientX;
+                    this.initialY = touch.clientY;
+                    this.startX = touch.clientX;
+                    this.startY = touch.clientY;
 //
                     setTimeout(() => this.style.display = 'none', 0);
                 });
