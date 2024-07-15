@@ -428,9 +428,11 @@ layout: home
 //
                     const elements = document.elementsFromPoint(currentX, currentY);
                     const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
+                    const others = sortableItems.find(el => el !== this && el !== target);
 //
                     if (target) {
                         target.style.border = "2px dashed #000";
+                        others.style.border = "1 px solid #000"
                         this.overItem = target;
                     }
                 });
