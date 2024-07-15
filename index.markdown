@@ -155,7 +155,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 3;
+        const questionsPerPage = 10;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
@@ -348,6 +348,7 @@ layout: home
             const sortableItems = document.querySelectorAll(".sortable-item");
             let draggedItem = null;
             let draggingClone = null;
+            let boxwidth = null;
 //
             sortableItems.forEach(item => {
                 item.addEventListener("dragstart", function(e) {
@@ -399,7 +400,7 @@ layout: home
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
                     draggingClone.style.left = `${touch.clientX} px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY}px`; // Set the initial position
+                    draggingClone.style.top = `${touch.clientY} px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
                     this.initialX = touch.clientX;
@@ -408,7 +409,7 @@ layout: home
                     this.startY = touch.clientY;
                     this.style.position = 'absolute';
                     this.style.zIndex = '1000';
-                    this.style.width = `${rect.width}px`;
+                    this.style.width = `${rect.width} px`;
 //
                     setTimeout(() => this.style.display = 'none', 0);
                 });
@@ -422,8 +423,8 @@ layout: home
                     const currentY = touch.clientY;
 //
                     if (draggingClone) {
-                        draggingClone.style.left = `${currentX - rect.width / 2}px`; // Adjust the position
-                        draggingClone.style.top = `${currentY - rect.height / 2}px`; // Adjust the position
+                        draggingClone.style.left = `${currentX - rect.width / 2} px`; // Adjust the position
+                        draggingClone.style.top = `${currentY - rect.height / 2} px`; // Adjust the position
                     }
 //
                     const elements = document.elementsFromPoint(currentX, currentY);
