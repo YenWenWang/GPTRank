@@ -445,8 +445,8 @@ layout: home
                         }
                     }, 0);
 //
-                    this.style.position = 'static';
-                    this.style.zIndex = '0';
+                    this.style.position = 'absolute';
+                    this.style.zIndex = '1000';
 //
                     if (this.overItem) {
                         this.overItem.style.border = "1px solid #000";
