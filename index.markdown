@@ -80,6 +80,13 @@ layout: home
             float: right;
             margin-left: 10px;
         }
+        .dragging {
+            opacity: 0.5;
+            background-color: #f0f0f0;
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -147,7 +154,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 10;
+        const questionsPerPage = 3;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
