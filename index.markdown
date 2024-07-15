@@ -392,12 +392,12 @@ layout: home
 
         // Touch events for smartphones
         item.addEventListener("touchstart", function(e) {
+            e.preventDefault();
             const touch = e.touches[0];
             draggingClone = this.cloneNode(true);
             draggingClone.classList.add('dragging');
             document.body.appendChild(draggingClone);
 
-            
             this.initialX = touch.clientX;
             this.initialY = touch.clientY;
             this.startX = touch.clientX;
