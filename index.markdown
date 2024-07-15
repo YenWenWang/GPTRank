@@ -80,6 +80,9 @@ layout: home
             float: right;
             margin-left: 10px;
         }
+        .dragging {
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -343,12 +346,14 @@ layout: home
     sortableItems.forEach(item => {
         item.addEventListener("dragstart", function() {
             draggedItem = this;
+            this.classList.add("dragging");
             setTimeout(() => this.style.display = 'none', 0);
         });
 
         item.addEventListener("dragend", function() {
             setTimeout(() => {
                 this.style.display = 'block';
+                this.classList.remove("dragging");
                 draggedItem = null;
             }, 0);
         });
@@ -383,6 +388,7 @@ layout: home
         // Touch events for smartphones
         item.addEventListener("touchstart", function(e) {
             draggedItem = this;
+            this.classList.add("dragging");
             setTimeout(() => this.style.display = 'none', 0);
             const touch = e.touches[0];
             this.initialX = touch.clientX;
@@ -412,30 +418,32 @@ layout: home
         });
 
         item.addEventListener("touchend", function() {
-            setTimeout(() => {
-                this.style.display = 'block';
-                draggedItem = null;
-            }, 0);
+    setTimeout(() => {
+        this.style.display = 'block';
+        this.classList.remove("dragging");
+        draggedItem = null;
+    }, 0);
 
-            this.style.position = 'static';
-            this.style.zIndex = '0';
+    this.style.position = 'static';
+    this.style.zIndex = '0';
+    this.style.border = "1px solid #000";
 
-            if (this.overItem) {
-                this.overItem.style.border = "1px solid #000";
-                if (draggedItem !== this.overItem) {
-                    let allItems = [...document.querySelectorAll(".sortable-item")];
-                    let draggedIndex = allItems.indexOf(draggedItem);
-                    let targetIndex = allItems.indexOf(this.overItem);
-                    if (draggedIndex < targetIndex) {
-                        this.overItem.parentNode.insertBefore(draggedItem, this.overItem.nextSibling);
-                    } else {
-                        this.overItem.parentNode.insertBefore(draggedItem, this.overItem);
-                    }
-                }
+    if (this.overItem) {
+        this.overItem.style.border = "1px solid #000";
+        if (draggedItem !== this.overItem) {
+            let allItems = [...document.querySelectorAll(".sortable-item")];
+            let draggedIndex = allItems.indexOf(draggedItem);
+            let targetIndex = allItems.indexOf(this.overItem);
+            if (draggedIndex < targetIndex) {
+                this.overItem.parentNode.insertBefore(draggedItem, this.overItem.nextSibling);
+            } else {
+                this.overItem.parentNode.insertBefore(draggedItem, this.overItem);
             }
+        }
+    }
 
-            this.overItem = null;
-        });
+    this.overItem = null;
+});
 
         item.addEventListener("touchcancel", function() {
             this.style.border = "1px solid #000";
