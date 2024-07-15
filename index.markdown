@@ -150,7 +150,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 3;
+        const questionsPerPage = 10;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
