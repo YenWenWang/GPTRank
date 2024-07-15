@@ -64,12 +64,13 @@ layout: home
             list-style: none;
         }
         .sortable-item {
-            margin: 5px 0;
-            padding: 10px;
-            border: 1px solid #000;
-            background-color: #fff;
-            cursor: move;
-        }
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #000;
+    background-color: #fff;
+    cursor: move;
+    position: relative; /* Add this */
+}
         .question-block {
             border: 1px solid #ccc;
             padding: 10px;
@@ -156,13 +157,13 @@ layout: home
             document.getElementById("histogramCanvas").style.display = "none";
             document.getElementById("goBack").style.display = 'none';
             document.getElementById("detailedAnswer").style.display = 'none';
-//
+        //
             const questionList = document.getElementById("questionList");
             questionList.innerHTML = "";
-//
+        //
             const questionsRef = ref(db, "Questions");
             let questionsQuery;
-//
+        //
             switch (currentSort) {
                 case 'titleAsc':
                     questionsQuery = query(questionsRef, orderByChild('Title'));
@@ -191,7 +192,6 @@ layout: home
                 default:
                     questionsQuery = questionsRef;
             }
-//
             try {
                 const snapshot = await get(questionsQuery);
                 if (snapshot.exists()) {
@@ -202,17 +202,21 @@ layout: home
                             question: childSnapshot.val()
                         });
                     });
-//
+        //
                     if (currentSort.endsWith('Desc')) {
                         questionsWithKeys.reverse();
                     }
-                    if (currentSort.startsWith('difficulty')) {
-                        questionsWithKeys.reverse();
+        //
+                    // Filter questions based on search input
+                    const searchText = document.getElementById("searchInput").value.trim().toLowerCase();
+                    //
+                    if (searchText) {
+                        questionsWithKeys = questionsWithKeys.filter(question => 
+                            question.question.Title.toLowerCase().includes(searchText)
+                        );
                     }
-                    if (currentSort.startsWith('date')) {
-                        questionsWithKeys.reverse();
-                    }
-//
+        //
+                    const totalQuestions = questionsWithKeys.length;
                     let questionCount = 0;
                     questionsWithKeys.forEach((question, index) => {
                         if (questionCount < questionsPerPage * currentPage && questionCount >= questionsPerPage * (currentPage - 1)) {
@@ -228,16 +232,27 @@ layout: home
                         }
                         questionCount++;
                     });
-//
+        //
                     if (questionCount === 0) {
                         questionList.innerHTML = "<p>No questions found</p>";
                     }
+        //
+                    updatePagination(totalQuestions);
                 } else {
                     questionList.innerHTML = "<p>No questions found</p>";
                 }
             } catch (error) {
                 console.error("Error fetching questions:", error);
             }
+        }
+//
+        function updatePagination(totalQuestions) {
+            const totalPages = Math.ceil(totalQuestions / questionsPerPage);
+            const prevPageBtn = document.getElementById('prevPageBtn');
+            const nextPageBtn = document.getElementById('nextPageBtn');
+//
+            prevPageBtn.disabled = currentPage <= 1;
+            nextPageBtn.disabled = currentPage >= totalPages;
         }
 //
         function navigatePage(direction) {
@@ -259,7 +274,6 @@ layout: home
 //
         function filterQuestions(searchText) {
             const questions = document.querySelectorAll(".list-question");
-//
             questions.forEach((question) => {
                 const textContent = question.textContent.toLowerCase();
                 if (textContent.includes(searchText.toLowerCase())) {
@@ -268,12 +282,13 @@ layout: home
                     question.style.display = "none";
                 }
             });
+            updatePagination(questions.length);
         }
 //
-        const searchInput = document.getElementById("searchInput");
-        searchInput.addEventListener("input", () => {
-            const searchText = searchInput.value.trim();
-            filterQuestions(searchText);
+        document.getElementById("searchInput").addEventListener('input', function() {
+            // Call the function to update the display with filtered questions
+            currentPage=1;
+            displayQuestions();
         });
 // 
         document.getElementById("goBack").addEventListener("click", () => {
@@ -323,50 +338,95 @@ layout: home
         });
 //
         function initializeDragAndDrop() {
-            const sortableItems = document.querySelectorAll(".sortable-item");
-            let draggedItem = null;
-//
-            sortableItems.forEach(item => {
-                item.addEventListener("dragstart", function() {
-                    draggedItem = this;
-                    setTimeout(() => this.style.display = 'none', 0);
-                });
-//
-                item.addEventListener("dragend", function() {
-                    setTimeout(() => {
-                        this.style.display = 'block';
-                        draggedItem = null;
-                    }, 0);
-                });
-//
-                item.addEventListener("dragover", function(e) {
-                    e.preventDefault();
-                });
-//
-                item.addEventListener("dragenter", function(e) {
-                    e.preventDefault();
-                    this.style.border = "2px dashed #000";
-                });
-//
-                item.addEventListener("dragleave", function() {
-                    this.style.border = "1px solid #000";
-                });
-//
-                item.addEventListener("drop", function() {
-                    this.style.border = "1px solid #000";
-                    if (draggedItem !== this) {
-                        let allItems = [...document.querySelectorAll(".sortable-item")];
-                        let draggedIndex = allItems.indexOf(draggedItem);
-                        let targetIndex = allItems.indexOf(this);
-                        if (draggedIndex < targetIndex) {
-                            this.parentNode.insertBefore(draggedItem, this.nextSibling);
-                        } else {
-                            this.parentNode.insertBefore(draggedItem, this);
-                        }
+    const sortableItems = document.querySelectorAll(".sortable-item");
+    let draggedItem = null;
+    let startX, startY, initialLeft, initialTop;
+
+    sortableItems.forEach(item => {
+        item.addEventListener("dragstart", function(e) {
+            draggedItem = this;
+            setTimeout(() => this.style.display = 'none', 0);
+        });
+
+        item.addEventListener("dragend", function() {
+            setTimeout(() => {
+                this.style.display = 'block';
+                draggedItem = null;
+            }, 0);
+        });
+
+        item.addEventListener("dragover", function(e) {
+            e.preventDefault();
+        });
+
+        item.addEventListener("dragenter", function(e) {
+            e.preventDefault();
+            this.style.border = "2px dashed #000";
+        });
+
+        item.addEventListener("dragleave", function() {
+            this.style.border = "1px solid #000";
+        });
+
+        item.addEventListener("drop", function() {
+            this.style.border = "1px solid #000";
+            if (draggedItem !== this) {
+                let allItems = [...document.querySelectorAll(".sortable-item")];
+                let draggedIndex = allItems.indexOf(draggedItem);
+                let targetIndex = allItems.indexOf(this);
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedItem, this);
+                }
+            }
+        });
+
+        // Touch events
+        item.addEventListener("touchstart", function(e) {
+            e.preventDefault();
+            const touch = e.touches[0];
+            draggedItem = this;
+            startX = touch.clientX;
+            startY = touch.clientY;
+            initialLeft = parseInt(window.getComputedStyle(this).left, 10);
+            initialTop = parseInt(window.getComputedStyle(this).top, 10);
+            this.style.position = 'absolute';
+            document.body.appendChild(this);
+        });
+
+        item.addEventListener("touchmove", function(e) {
+            if (draggedItem) {
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - startX;
+                const deltaY = touch.clientY - startY;
+                draggedItem.style.left = `${initialLeft + deltaX}px`;
+                draggedItem.style.top = `${initialTop + deltaY}px`;
+            }
+        });
+
+        item.addEventListener("touchend", function(e) {
+            if (draggedItem) {
+                const touch = e.changedTouches[0];
+                const target = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (target && target.classList.contains('sortable-item') && draggedItem !== target) {
+                    let allItems = [...document.querySelectorAll(".sortable-item")];
+                    let draggedIndex = allItems.indexOf(draggedItem);
+                    let targetIndex = allItems.indexOf(target);
+                    if (draggedIndex < targetIndex) {
+                        target.parentNode.insertBefore(draggedItem, target.nextSibling);
+                    } else {
+                        target.parentNode.insertBefore(draggedItem, target);
                     }
-                });
-            });
-        }
+                }
+                draggedItem.style.position = '';
+                draggedItem.style.left = '';
+                draggedItem.style.top = '';
+                draggedItem = null;
+            }
+        });
+    });
+}
 //
         async function submitRanks(questionKey) {
             const sortableList = document.getElementById("sortableList");
