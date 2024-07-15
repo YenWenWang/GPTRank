@@ -148,7 +148,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 10;
+        const questionsPerPage = 3;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
@@ -340,10 +340,17 @@ layout: home
         function initializeDragAndDrop() {
     const sortableItems = document.querySelectorAll(".sortable-item");
     let draggedItem = null;
-    let startX, startY, initialLeft, initialTop;
+    let startY, startX;
+
+    const getTouchCoords = (e) => {
+        return {
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY
+        };
+    };
 
     sortableItems.forEach(item => {
-        item.addEventListener("dragstart", function(e) {
+        item.addEventListener("dragstart", function() {
             draggedItem = this;
             setTimeout(() => this.style.display = 'none', 0);
         });
@@ -384,46 +391,39 @@ layout: home
 
         // Touch events
         item.addEventListener("touchstart", function(e) {
-            e.preventDefault();
-            const touch = e.touches[0];
             draggedItem = this;
-            startX = touch.clientX;
-            startY = touch.clientY;
-            initialLeft = parseInt(window.getComputedStyle(this).left, 10);
-            initialTop = parseInt(window.getComputedStyle(this).top, 10);
-            this.style.position = 'absolute';
-            document.body.appendChild(this);
+            const coords = getTouchCoords(e);
+            startY = coords.y;
+            startX = coords.x;
+            this.style.display = 'none';
         });
 
         item.addEventListener("touchmove", function(e) {
-            if (draggedItem) {
-                const touch = e.touches[0];
-                const deltaX = touch.clientX - startX;
-                const deltaY = touch.clientY - startY;
-                draggedItem.style.left = `${initialLeft + deltaX}px`;
-                draggedItem.style.top = `${initialTop + deltaY}px`;
-            }
-        });
+    e.preventDefault();
+    const coords = getTouchCoords(e);
+    const deltaY = coords.y - startY;
+    const deltaX = coords.x - startX;
+    if (Math.abs(deltaY) > 10 || Math.abs(deltaX) > 10) {
+        this.style.position = 'absolute';
+        this.style.top = `${coords.y}px`;
+        this.style.left = `${coords.x}px`;
+    }
+});
 
         item.addEventListener("touchend", function(e) {
-            if (draggedItem) {
-                const touch = e.changedTouches[0];
-                const target = document.elementFromPoint(touch.clientX, touch.clientY);
-                if (target && target.classList.contains('sortable-item') && draggedItem !== target) {
-                    let allItems = [...document.querySelectorAll(".sortable-item")];
-                    let draggedIndex = allItems.indexOf(draggedItem);
-                    let targetIndex = allItems.indexOf(target);
-                    if (draggedIndex < targetIndex) {
-                        target.parentNode.insertBefore(draggedItem, target.nextSibling);
-                    } else {
-                        target.parentNode.insertBefore(draggedItem, target);
-                    }
+            e.preventDefault();
+            this.style.display = 'block';
+            if (draggedItem !== this) {
+                let allItems = [...document.querySelectorAll(".sortable-item")];
+                let draggedIndex = allItems.indexOf(draggedItem);
+                let targetIndex = allItems.indexOf(this);
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedItem, this);
                 }
-                draggedItem.style.position = '';
-                draggedItem.style.left = '';
-                draggedItem.style.top = '';
-                draggedItem = null;
             }
+            draggedItem = null;
         });
     });
 }
