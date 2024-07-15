@@ -402,8 +402,8 @@ layout: home
 //
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
-                    draggingClone.style.left = `${touch.pageX-rect.width/2}px`; // Set the initial position
-                    draggingClone.style.top = `${touch.pageY-rect.height/2}px`; // Set the initial position
+                    draggingClone.style.left = `${touch.clientX-rect.width/2}px`; // Set the initial position
+                    draggingClone.style.top = `${touch.clientY-rect.height/2}px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
                     this.initialX = touch.clientX;
@@ -418,8 +418,8 @@ layout: home
                     e.preventDefault();
                     draggedItem = this;
                     const touch = e.touches[0];
-                    const currentX = touch.pageX;
-                    const currentY = touch.pageY;
+                    const currentX = touch.clientX;
+                    const currentY = touch.clientY;
 //
                     if (draggingClone) {
                         draggingClone.style.left = `${currentX-rect.width/2}px`; // Adjust the position
