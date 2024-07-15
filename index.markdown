@@ -155,7 +155,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 3;
+        const questionsPerPage = 10;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
@@ -467,9 +467,6 @@ layout: home
                 });
 //
                 item.addEventListener("touchcancel", function() {
-                    const rect = this.getBoundingClientRect();
-                    this.style.border = "1px solid #000";
-                    this.style.width = draggingClone.style.width;
                     if (draggedItem !== this) {
                         let allItems = [...document.querySelectorAll(".sortable-item")];
                         let draggedIndex = allItems.indexOf(draggedItem);
