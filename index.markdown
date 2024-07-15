@@ -15,12 +15,12 @@ layout: home
         }
         h3{
             text-align: center;
-            font-size: 3.5em;
+            font-size: 4vw;
             font-family: Arial, sans-serif;
         }
         h4{
             text-align: center;
-            font-size: 2.5em;
+            font-size: 3vw;
             font-family: Arial, sans-serif;
         }
         #search-sort-container {
@@ -131,7 +131,7 @@ layout: home
             }
         }
         .item-title {
-            font-size: 1.5em;
+            font-size: 1.5vw;
         }
     </style>
     <meta name="viewport" content="width=device-width, initial-scale=1">
