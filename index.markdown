@@ -397,14 +397,14 @@ layout: home
                     const touch = e.touches[0];
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
-                    draggingClone.style.left = `${touch.clientX}px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY}px`; // Set the initial position
+                    draggingClone.style.left = `${touch.clientX - this.clientWidth / 2} px`; // Set the initial position
+                    draggingClone.style.top = `${touch.clientY - this.clientHeight / 2}}px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
-                    this.initialX = touch.clientX - this.clientWidth / 2;
-                    this.initialY = touch.clientY - this.clientHeight / 2;
-                    this.startX = touch.clientX - this.clientWidth / 2;
-                    this.startY = touch.clientY - this.clientHeight / 2;
+                    this.initialX = touch.clientX;
+                    this.initialY = touch.clientY;
+                    this.startX = touch.clientX;
+                    this.startY = touch.clientY;
                     this.style.position = 'absolute';
                     this.style.zIndex = '1000';
                     this.style.width = `${this.clientWidth}px`;
