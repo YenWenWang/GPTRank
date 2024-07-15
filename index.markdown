@@ -387,14 +387,10 @@ layout: home
             const touch = e.touches[0];
             this.initialX = touch.clientX;
             this.initialY = touch.clientY;
-        });
-
-        item.addEventListener("touchend", function() {
-            setTimeout(() => {
-                this.style.display = 'block';
-                draggedItem = null;
-            }, 0);
-            this.style.border = "1px solid #000";
+            this.startX = touch.clientX;
+            this.startY = touch.clientY;
+            this.style.position = 'absolute';
+            this.style.zIndex = '1000';
         });
 
         item.addEventListener("touchmove", function(e) {
@@ -402,31 +398,49 @@ layout: home
             const touch = e.touches[0];
             const currentX = touch.clientX;
             const currentY = touch.clientY;
-            this.style.position = 'absolute';
-            this.style.zIndex = '1000';
             this.style.left = `${currentX - this.initialX}px`;
             this.style.top = `${currentY - this.initialY}px`;
+
+            // Check if dragged over another item
+            const elements = document.elementsFromPoint(currentX, currentY);
+            const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
+
+            if (target) {
+                target.style.border = "2px dashed #000";
+                this.overItem = target;
+            }
+        });
+
+        item.addEventListener("touchend", function() {
+            setTimeout(() => {
+                this.style.display = 'block';
+                draggedItem = null;
+            }, 0);
+
+            this.style.position = 'static';
+            this.style.zIndex = '0';
+
+            if (this.overItem) {
+                this.overItem.style.border = "1px solid #000";
+                if (draggedItem !== this.overItem) {
+                    let allItems = [...document.querySelectorAll(".sortable-item")];
+                    let draggedIndex = allItems.indexOf(draggedItem);
+                    let targetIndex = allItems.indexOf(this.overItem);
+                    if (draggedIndex < targetIndex) {
+                        this.overItem.parentNode.insertBefore(draggedItem, this.overItem.nextSibling);
+                    } else {
+                        this.overItem.parentNode.insertBefore(draggedItem, this.overItem);
+                    }
+                }
+            }
+
+            this.overItem = null;
         });
 
         item.addEventListener("touchcancel", function() {
             this.style.border = "1px solid #000";
             this.style.position = 'static';
             this.style.zIndex = '0';
-        });
-
-        item.addEventListener("touchend", function() {
-            this.style.position = 'static';
-            this.style.zIndex = '0';
-            this.style.border = "1px solid #000";
-        });
-
-        item.addEventListener("touchenter", function(e) {
-            e.preventDefault();
-            this.style.border = "2px dashed #000";
-        });
-
-        item.addEventListener("touchleave", function() {
-            this.style.border = "1px solid #000";
         });
     });
 }
