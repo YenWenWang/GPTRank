@@ -81,12 +81,12 @@ layout: home
             margin-left: 10px;
         }
         .dragging {
-    opacity: 0.5;
-    background-color: #f0f0f0;
-    position: absolute;
-    pointer-events: none;
-    z-index: 1000;
-}
+            opacity: 0.5;
+            background-color: #f0f0f0;
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+        }
     </style>
 </head>
 <body>
@@ -346,50 +346,60 @@ layout: home
         function initializeDragAndDrop() {
     const sortableItems = document.querySelectorAll(".sortable-item");
     let draggedItem = null;
-    let draggingClone = null;  // Add a clone for dragging
+    let draggingClone = null;
 
     sortableItems.forEach(item => {
         item.addEventListener("dragstart", function(e) {
             draggedItem = this;
-            draggingClone = this.cloneNode(true); // Clone the item being dragged
-            draggingClone.classList.add('dragging'); // Add class to the clone
-
-            document.body.appendChild(draggingClone); // Append the clone to the body
+            draggingClone = this.cloneNode(true);
+            draggingClone.classList.add('dragging');
+            document.body.appendChild(draggingClone);
 
             const rect = this.getBoundingClientRect();
             draggingClone.style.width = `${rect.width}px`;
             draggingClone.style.height = `${rect.height}px`;
 
-            // Position the clone at the mouse position
-            draggingClone.style.left = `${e.pageX - rect.width / 2}px`;
-            draggingClone.style.top = `${e.pageY - rect.height / 2}px`;
-
             setTimeout(() => this.style.display = 'none', 0);
         });
 
         item.addEventListener("dragend", function() {
-    setTimeout(() => {
-        this.style.display = 'block';
-        draggedItem = null;
-        document.body.removeChild(draggingClone); // Remove the clone
-        draggingClone = null;
-    }, 0);
-    this.style.border = "1px solid #000";  // Reset border
-});
+            setTimeout(() => {
+                this.style.display = 'block';
+                draggedItem = null;
+                if (draggingClone) {
+                    document.body.removeChild(draggingClone);
+                    draggingClone = null;
+                }
+            }, 0);
+            this.style.border = "1px solid #000";  // Reset border
+        });
 
-item.addEventListener("drop", function() {
-    this.style.border = "1px solid #000";
-    if (draggedItem !== this) {
-        let allItems = [...document.querySelectorAll(".sortable-item")];
-        let draggedIndex = allItems.indexOf(draggedItem);
-        let targetIndex = allItems.indexOf(this);
-        if (draggedIndex < targetIndex) {
-            this.parentNode.insertBefore(draggedItem, this.nextSibling);
-        } else {
-            this.parentNode.insertBefore(draggedItem, this);
-        }
-    }
-});
+        item.addEventListener("dragover", function(e) {
+            e.preventDefault();
+        });
+
+        item.addEventListener("dragenter", function(e) {
+            e.preventDefault();
+            this.style.border = "2px dashed #000";
+        });
+
+        item.addEventListener("dragleave", function() {
+            this.style.border = "1px solid #000";
+        });
+
+        item.addEventListener("drop", function() {
+            this.style.border = "1px solid #000";
+            if (draggedItem !== this) {
+                let allItems = [...document.querySelectorAll(".sortable-item")];
+                let draggedIndex = allItems.indexOf(draggedItem);
+                let targetIndex = allItems.indexOf(this);
+                if (draggedIndex < targetIndex) {
+                    this.parentNode.insertBefore(draggedItem, this.nextSibling);
+                } else {
+                    this.parentNode.insertBefore(draggedItem, this);
+                }
+            }
+        });
 
         // Touch events for smartphones
         item.addEventListener("touchstart", function(e) {
@@ -398,7 +408,6 @@ item.addEventListener("drop", function() {
             draggingClone.classList.add('dragging');
             document.body.appendChild(draggingClone);
 
-            setTimeout(() => this.style.display = 'none', 0);
             const touch = e.touches[0];
             this.initialX = touch.clientX;
             this.initialY = touch.clientY;
@@ -406,6 +415,9 @@ item.addEventListener("drop", function() {
             this.startY = touch.clientY;
             this.style.position = 'absolute';
             this.style.zIndex = '1000';
+            this.style.width = `${this.clientWidth}px`;
+
+            setTimeout(() => this.style.display = 'none', 0);
         });
 
         item.addEventListener("touchmove", function(e) {
@@ -413,13 +425,8 @@ item.addEventListener("drop", function() {
             const touch = e.touches[0];
             const currentX = touch.clientX;
             const currentY = touch.clientY;
-            this.style.left = `${currentX - this.initialX}px`;
-            this.style.top = `${currentY - this.initialY}px`;
-
-            if (draggingClone) {
-                draggingClone.style.left = `${currentX - this.initialX}px`;
-                draggingClone.style.top = `${currentY - this.initialY}px`;
-            }
+            draggingClone.style.left = `${currentX - draggingClone.offsetWidth / 2}px`;
+            draggingClone.style.top = `${currentY - draggingClone.offsetHeight / 2}px`;
 
             const elements = document.elementsFromPoint(currentX, currentY);
             const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
