@@ -400,6 +400,7 @@ layout: home
                     this.style.position = 'absolute';
                     this.style.zIndex = '1000';
                     this.style.width = `${rect.width}px`;
+//
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
                     draggingClone.style.left = `${touch.clientX-rect.width/2}px`; // Set the initial position
@@ -447,6 +448,7 @@ layout: home
 //
                     this.style.position = 'static';
                     this.style.zIndex = '0';
+                    this.style.width = `${rect.width}px`;
 //
                     if (this.overItem) {
                         this.overItem.style.border = "1px solid #000";
