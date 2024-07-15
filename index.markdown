@@ -351,6 +351,7 @@ layout: home
 //
             sortableItems.forEach(item => {
                 item.addEventListener("dragstart", function(e) {
+                    const rect = this.getBoundingClientRect();
                     draggedItem = this;
                     setTimeout(() => this.style.display = 'none', 0);
                 });
@@ -395,10 +396,11 @@ layout: home
                 item.addEventListener("touchstart", function(e) {
                     e.preventDefault();
                     const touch = e.touches[0];
+                    const rect = this.getBoundingClientRect();
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
-                    draggingClone.style.left = `${touch.clientX - this.clientWidth / 2} px`; // Set the initial position
-                    draggingClone.style.top = `${touch.clientY - this.clientHeight / 2}}px`; // Set the initial position
+                    draggingClone.style.left = `${touch.clientX - rect.width / 2} px`; // Set the initial position
+                    draggingClone.style.top = `${touch.clientY - rect.height / 2}px`; // Set the initial position
                     document.body.appendChild(draggingClone);
 //
                     this.initialX = touch.clientX;
@@ -407,7 +409,7 @@ layout: home
                     this.startY = touch.clientY;
                     this.style.position = 'absolute';
                     this.style.zIndex = '1000';
-                    this.style.width = `${this.clientWidth}px`;
+                    this.style.width = `${rect.width}px`;
 //
                     setTimeout(() => this.style.display = 'none', 0);
                 });
@@ -415,13 +417,14 @@ layout: home
                 item.addEventListener("touchmove", function(e) {
                     e.preventDefault();
                     draggedItem = this;
+                    const rect = this.getBoundingClientRect();
                     const touch = e.touches[0];
                     const currentX = touch.clientX;
                     const currentY = touch.clientY;
 //
                     if (draggingClone) {
-                        draggingClone.style.left = `${currentX - this.clientWidth / 2}px`; // Adjust the position
-                        draggingClone.style.top = `${currentY - this.clientHeight / 2}px`; // Adjust the position
+                        draggingClone.style.left = `${currentX - rect.width / 2}px`; // Adjust the position
+                        draggingClone.style.top = `${currentY - rect.height / 2}px`; // Adjust the position
                     }
 //
                     const elements = document.elementsFromPoint(currentX, currentY);
@@ -464,8 +467,9 @@ layout: home
                 });
 //
                 item.addEventListener("touchcancel", function() {
+                    const rect = this.getBoundingClientRect();
                     this.style.border = "1px solid #000";
-                    this.style.width = `${this.clientWidth}px`;
+                    this.style.width = `${rect.width}px`;
                     if (draggedItem !== this) {
                         let allItems = [...document.querySelectorAll(".sortable-item")];
                         let draggedIndex = allItems.indexOf(draggedItem);
