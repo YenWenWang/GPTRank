@@ -383,7 +383,7 @@ layout: home
             }
         });
 
-        // Touch events for smartphones
+                // Touch events for smartphones
         item.addEventListener("touchstart", function(e) {
             const touch = e.touches[0];
             this.initialX = touch.clientX;
@@ -409,6 +409,9 @@ layout: home
             if (target) {
                 target.style.border = "2px dashed #000";
                 this.overItem = target;
+            } else if (this.overItem) {
+                this.overItem.style.border = "1px solid #000";
+                this.overItem = null;
             }
         });
 
@@ -441,8 +444,12 @@ layout: home
             this.style.border = "1px solid #000";
             this.style.position = 'static';
             this.style.zIndex = '0';
+
+            if (this.overItem) {
+                this.overItem.style.border = "1px solid #000";
+                this.overItem = null;
+            }
         });
-    });
 
     document.addEventListener("drag", function(e) {
         if (draggingClone) {
