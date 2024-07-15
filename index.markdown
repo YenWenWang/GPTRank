@@ -80,13 +80,6 @@ layout: home
             float: right;
             margin-left: 10px;
         }
-        .dragging {
-            opacity: 0.5;
-            background-color: #f0f0f0;
-            position: absolute;
-            pointer-events: none;
-            z-index: 1000;
-        }
     </style>
 </head>
 <body>
@@ -351,25 +344,14 @@ layout: home
     sortableItems.forEach(item => {
         item.addEventListener("dragstart", function(e) {
             draggedItem = this;
-            draggingClone = this.cloneNode(true);
-            draggingClone.classList.add('dragging');
-            document.body.appendChild(draggingClone);
-
-            const rect = this.getBoundingClientRect();
-            draggingClone.style.width = `${rect.width}px`;
-            draggingClone.style.height = `${rect.height}px`;
-
             setTimeout(() => this.style.display = 'none', 0);
         });
 
         item.addEventListener("dragend", function() {
+            this.style.display = 'block';
+            draggedItem = null;
             setTimeout(() => {
                 this.style.display = 'block';
-                draggedItem = null;
-                if (draggingClone) {
-                    document.body.removeChild(draggingClone);
-                    draggingClone = null;
-                }
             }, 0);
             this.style.border = "1px solid #000";  // Reset border
         });
@@ -396,18 +378,13 @@ layout: home
                 if (draggedIndex < targetIndex) {
                     this.parentNode.insertBefore(draggedItem, this.nextSibling);
                 } else {
-                    this.parentNode.insertBefore(draggedItem, this);
+                    this.parentNode.insertAfter(draggedItem, this);
                 }
             }
         });
 
         // Touch events for smartphones
         item.addEventListener("touchstart", function(e) {
-            draggedItem = this;
-            draggingClone = this.cloneNode(true);
-            draggingClone.classList.add('dragging');
-            document.body.appendChild(draggingClone);
-
             const touch = e.touches[0];
             this.initialX = touch.clientX;
             this.initialY = touch.clientY;
@@ -425,10 +402,8 @@ layout: home
             const touch = e.touches[0];
             const currentX = touch.clientX;
             const currentY = touch.clientY;
-            draggingClone.style.left = `${currentX}px`;
-            draggingClone.style.top = `${currentY}px`;
 
-            const elements = document.elementsFromPoint(currentX, currentY);
+            const elements = document.elementsFromPoint(currentX - this.clientWidth / 2, currentY - this.clientHeight / 2);
             const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
 
             if (target) {
@@ -440,11 +415,6 @@ layout: home
         item.addEventListener("touchend", function() {
             setTimeout(() => {
                 this.style.display = 'block';
-                draggedItem = null;
-                if (draggingClone) {
-                    document.body.removeChild(draggingClone);
-                    draggingClone = null;
-                }
             }, 0);
 
             this.style.position = 'static';
