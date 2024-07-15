@@ -391,83 +391,30 @@ layout: home
                     }
                 });
 //
-                // Touch events for smartphones
-                item.addEventListener("touchstart", function(e) {
-                    e.preventDefault();
-                    const touch = e.touches[0];
-                    const rect = this.getBoundingClientRect();
-                    draggingClone = this;
-                    
-                    setTimeout(() => this.style.display = 'none', 0);
-                });
-//
-                item.addEventListener("touchmove", function(e) {
-                    e.preventDefault();
-                    draggedItem = this;
-                    const rect = this.getBoundingClientRect();
-                    const touch = e.touches[0];
-                    const currentX = touch.clientX;
-                    const currentY = touch.clientY;
-//
-                    if (draggingClone) {
-                        draggingClone.style.left = `${currentX - rect.width / 2}px`; // Adjust the position
-                        draggingClone.style.top = `${currentY - rect.height / 2}px`; // Adjust the position
-                    }
-//
-                    const elements = document.elementsFromPoint(currentX, currentY);
-                    const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
-//
-                    if (target) {
-                        target.style.border = "2px dashed #000";
-                        this.overItem = target;
-                    }
-                });
-//
-                item.addEventListener("touchend", function() {
-                    setTimeout(() => {
-                        this.style.display = 'block';
-                        draggedItem = null;
-                        if (draggingClone) {
-                            document.body.removeChild(draggingClone);
-                            draggingClone = null;
-                        }
-                    }, 0);
-//
-                    this.style.position = 'static';
-                    this.style.zIndex = '0';
-//
-                    if (this.overItem) {
-                        this.overItem.style.border = "1px solid #000";
-                        if (draggedItem !== this.overItem) {
-                            let allItems = [...document.querySelectorAll(".sortable-item")];
-                            let draggedIndex = allItems.indexOf(draggedItem);
-                            let targetIndex = allItems.indexOf(this.overItem);
-                            if (draggedIndex < targetIndex) {
-                                this.overItem.parentNode.insertBefore(draggedItem, this.overItem.nextSibling);
-                            } else {
-                                this.overItem.parentNode.insertBefore(draggedItem, this.overItem);
-                            }
-                        }
-                    }
-//
-                    this.overItem = null;
-                });
-//
-                item.addEventListener("touchcancel", function() {
-                    if (draggedItem !== this) {
-                        let allItems = [...document.querySelectorAll(".sortable-item")];
-                        let draggedIndex = allItems.indexOf(draggedItem);
-                        let targetIndex = allItems.indexOf(this);
-                        if (draggedIndex < targetIndex) {
-                            this.parentNode.insertBefore(draggedItem, this.nextSibling);
-                        } else {
-                            this.parentNode.insertBefore(draggedItem, this);
-                        }
-                    }
-                });
-            });
-//
-        }
+function touchHandler(event) {
+    var touch = event.changedTouches[0];
+
+    var simulatedEvent = document.createEvent("MouseEvent");
+        simulatedEvent.initMouseEvent({
+        touchstart: "mousedown",
+        touchmove: "mousemove",
+        touchend: "mouseup"
+    }[event.type], true, true, window, 1,
+        touch.screenX, touch.screenY,
+        touch.clientX, touch.clientY, false,
+        false, false, false, 0, null);
+
+    touch.target.dispatchEvent(simulatedEvent);
+    event.preventDefault();
+}
+
+function init() {
+    document.addEventListener("touchstart", touchHandler, true);
+    document.addEventListener("touchmove", touchHandler, true);
+    document.addEventListener("touchend", touchHandler, true);
+    document.addEventListener("touchcancel", touchHandler, true);
+}
+        
 //
         async function submitRanks(questionKey) {
             const sortableList = document.getElementById("sortableList");
