@@ -150,6 +150,7 @@ layout: home
     <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+    <text>Guess how chatGPT rank different things!</text>
     <div id="Main">
         <div id="search-sort-container">
             <div id="Search">
