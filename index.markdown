@@ -386,6 +386,11 @@ layout: home
         // Touch events for smartphones
         item.addEventListener("touchstart", function(e) {
             const touch = e.touches[0];
+            draggingClone = this.cloneNode(true);
+            draggingClone.classList.add('dragging');
+            document.body.appendChild(draggingClone);
+
+            
             this.initialX = touch.clientX;
             this.initialY = touch.clientY;
             this.startX = touch.clientX;
@@ -403,6 +408,12 @@ layout: home
             const currentX = touch.clientX;
             const currentY = touch.clientY;
 
+            if (draggingClone) {
+                draggingClone.style.left = `${currentX - this.initialX}px`;
+                draggingClone.style.top = `${currentY - this.initialY}px`;
+            }
+
+
             const elements = document.elementsFromPoint(currentX - this.clientWidth / 2, currentY - this.clientHeight / 2);
             const target = elements.find(el => el.classList.contains('sortable-item') && el !== this);
 
@@ -415,6 +426,11 @@ layout: home
         item.addEventListener("touchend", function() {
             setTimeout(() => {
                 this.style.display = 'block';
+                draggedItem = null;
+                if (draggingClone) {
+                    document.body.removeChild(draggingClone);
+                    draggingClone = null;
+                }
             }, 0);
 
             this.style.position = 'static';
@@ -444,12 +460,6 @@ layout: home
         });
     });
 
-    document.addEventListener("drag", function(e) {
-        if (draggingClone) {
-            draggingClone.style.left = `${e.pageX - draggingClone.offsetWidth / 2}px`;
-            draggingClone.style.top = `${e.pageY - draggingClone.offsetHeight / 2}px`;
-        }
-    });
 }
 //
         async function submitRanks(questionKey) {
@@ -619,7 +629,6 @@ layout: home
                 });
                 return 100 * count / arr.length;
             }
-            alert(percentile(eachScores, score));
 //
             document.getElementById("submitRanks").style.display = 'none';
             results.style.display = 'block';
