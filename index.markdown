@@ -155,7 +155,7 @@ layout: home
         const analytics = getAnalytics(app);
         const db = getDatabase();
 //
-        const questionsPerPage = 3;
+        const questionsPerPage = 10;
         let currentPage = 1;
         let currentSort = 'titleAsc';
         let questionKey;
@@ -348,6 +348,7 @@ layout: home
             const sortableItems = document.querySelectorAll(".sortable-item");
             let draggedItem = null;
             let draggingClone = null;
+            let rect = null;
 //
             sortableItems.forEach(item => {
                 item.addEventListener("dragstart", function(e) {
@@ -395,7 +396,7 @@ layout: home
                 item.addEventListener("touchstart", function(e) {
                     e.preventDefault();
                     const touch = e.touches[0];
-                    const rect = this.getBoundingClientRect();
+                    rect = this.getBoundingClientRect();
                     draggingClone = this.cloneNode(true);
                     draggingClone.classList.add('dragging');
                     draggingClone.style.left = `${touch.clientX-rect.width/2}px`; // Set the initial position
@@ -419,7 +420,6 @@ layout: home
                     const touch = e.touches[0];
                     const currentX = touch.clientX;
                     const currentY = touch.clientY;
-                    const rect = this.getBoundingClientRect();
 //
                     if (draggingClone) {
                         draggingClone.style.left = `${touch.clientX-rect.width/2}px`; // Adjust the position
