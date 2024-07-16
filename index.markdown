@@ -284,6 +284,9 @@ layout: home
                     if (currentSort.endsWith('Desc')) {
                         questionsWithKeys.reverse();
                     }
+                    if (currentSort.startswith('difficulty')) {
+                        questionsWithKeys.reverse();
+                    }
         //
                     // Filter questions based on search input
                     const searchText = document.getElementById("searchInput").value.trim().toLowerCase();
