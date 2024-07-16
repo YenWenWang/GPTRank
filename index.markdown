@@ -284,7 +284,7 @@ layout: home
                     if (currentSort.endsWith('Desc')) {
                         questionsWithKeys.reverse();
                     }
-                    if (currentSort.startswith('difficulty')) {
+                    if (currentSort.startsWith('difficulty')) {
                         questionsWithKeys.reverse();
                     }
         //
